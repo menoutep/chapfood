@@ -42,27 +42,28 @@
 					</div>
 				</div>
 				    <script>
-        // script.js
-				// JavaScript pour gérer les interactions avec le panier
-				// Par exemple, ajouter un produit au panier en utilisant Fetch API
+						// script.js
+						// JavaScript pour gérer les interactions avec le panier
+						// Par exemple, ajouter un produit au panier en utilisant Fetch API
 
-					document.getElementById('add-to-cart-button-{{ meal.id }}').addEventListener('click', function (event) {
-						event.preventDefault();
-						// Récupérer le produit à ajouter
-						const productID = {{meal.id}}; // ID du produit
-
-						// Effectuer une requête AJAX pour ajouter le produit au panier
-						fetch(`{% url 'base:add_to_cart' meal.id %}`)
-							.then(response => {
-								// Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-							})
-							.catch(error => {
-								console.error('Erreur lors de l\'ajout au panier :', error);
-							});
-					});
-
-
-    </script>
+						document.getElementById('add-to-cart-button-{{ meal.id }}').addEventListener('click', function (event) {
+							event.preventDefault();
+							// Récupérer le produit à ajouter
+							const productID = {{meal.id}}; // ID du produit
+							const quantity = 1;
+							
+							const updateURL = `{% url 'base:add_to_cart' meal.id 0 %}`;
+						// Effectuer une requête AJAX pour ajouter le produit au p
+							// Effectuer une requête AJAX pour ajouter le produit au panier
+							fetch(updateURL)
+								.then(response => {
+									// Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+								})
+								.catch(error => {
+									console.error('Erreur lors de l\'ajout au panier :', error);
+								});
+						});
+    				</script>
 				    {% endfor %}
 			</div>
 		</div>
@@ -90,7 +91,7 @@
                     <div class="text">{{cheapest_meal.description}}</div>
                     <!--Countdown Timer-->
                     <div class="time-counter"><div class="time-countdown clearfix" data-countdown="2020/2/01"><div class="counter-column"><div class="inner"><span class="count">00</span>Days</div></div> <div class="counter-column"><div class="inner"><span class="count">00</span>Hours</div></div>  <div class="counter-column"><div class="inner"><span class="count">00</span>Mins</div></div>  <div class="counter-column"><div class="inner"><span class="count">00</span>Secs</div></div></div></div>
-                	<a href="{% url 'base:add_to_cart' cheapest_meal.id %}" class="cart-btn mt-3"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+                	<a href="{% url 'base:add_to_cart' cheapest_meal.id 0 %}" class="cart-btn mt-3"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
                 </div>
             </div>
         </div>
