@@ -1,18 +1,127 @@
-{% extends 'base.html' %}
+{% extends 'index.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1 class="mb-4">{{ meal.name }}</h1>
-    <div class="row">
-        <div class="col-md-6">
-            <img src="{{ meal.image.url|safe }}" class="img-fluid" alt="{{ meal.name }}">
-        </div>
-        <div class="col-md-6">
-            <p>{{ meal.description }}</p>
-            <p>Prix : ${{ meal.price }}</p>
-            <a href="{% url 'base:add_to_cart' meal.id %}" class="btn btn-primary">Ajouter au Panier</a>
 
-        </div>
-    </div>
-</div>
+	<!-- breadcrumb-section -->
+	<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p>Voir les détails du produits</p>
+						<h1>Produits</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end breadcrumb section -->
+
+	<!-- single product -->
+	<div class="single-product mt-150 mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-5">
+					<div class="single-product-img">
+						<img src="{{ meal.image.url|safe }}" alt="">
+					</div>
+				</div>
+				<div class="col-md-7">
+					<div class="single-product-content">
+						<h3>{{ meal.name }}</h3>
+						<p class="single-product-pricing"><span>Par unité</span>{{meal.price}} cfa</p>
+						<p>{{meal.description}}.</p>
+						<div class="single-product-form">
+							
+								<input type="number" value="{{ meal.quantity }}" min = "0" placeholder="" id="quantity-input-{{ meal.id }}"><br>
+							<a href="#" class="cart-btn" id ="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+							<p><strong>Categories: </strong>{{meal.category.name}}</p>
+                            					<script>
+                                                    var newQuantity = 0;
+										            // Écoutez l'événement de modification de la quantité
+                                                    document.getElementById("add-to-cart-button-{{ meal.id }}").addEventListener("click", function (event) {
+                                                    event.preventDefault();
+                                                    newQuantity = document.getElementById("quantity-input-{{ meal.id }}").value;
+                                                    console.log(newQuantity);
+                                                    const updateURL = `{% url 'base:add_to_cart' meal.id 0 %}`.replace('0', newQuantity);
+                                                    // Soumettez le formulaire lorsque la quantité est modifiée
+                                                    console.log(updateURL);
+                                                    fetch(updateURL)
+                                                        .then(response => response.json())
+                                                        .then(data => {
+                                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                                                            
+
+                                                        })
+                                                        .catch(error => {
+                                                            console.error('Erreur lors de l\'ajout au panier :', error);
+                                                        });
+                                                    });
+                                                </script>
+						</div>
+						<h4>Share:</h4>
+						<ul class="product-share">
+							<li><a href=""><i class="fab fa-facebook-f"></i></a></li>
+							<li><a href=""><i class="fab fa-twitter"></i></a></li>
+							<li><a href=""><i class="fab fa-google-plus-g"></i></a></li>
+							<li><a href=""><i class="fab fa-linkedin"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end single product -->
+
+	<!-- more products -->
+	<div class="more-products mb-150">
+		<div class="container">
+			<div class="row">
+            
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="section-title">	
+						<h3><span class="orange-text">Related</span> Products</h3>
+						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid, fuga quas itaque eveniet beatae optio.</p>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+                {% for meal in similar_meals %}
+				<div class="col-lg-4 col-md-6 text-center">
+					<div class="single-product-item">
+						<div class="product-image">
+							<a href="single-product.html"><img src="{{ meal.image.url|safe }}" alt=""></a>
+						</div>
+						<h3>{{ meal.name }}</h3>
+						<p class="product-price"><span>Par unité</span> {{ meal.price }} cfa</p>
+						<a href="#" class="cart-btn" id="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+					</div>
+                <script>
+				// JavaScript pour gérer les interactions avec le panier
+				// Par exemple, ajouter un produit au panier en utilisant Fetch API
+
+					document.getElementById('add-to-cart-button-{{ meal.id }}').addEventListener('click', function (event) {
+						event.preventDefault();
+						// Récupérer le produit à ajouter
+						const productID = {{meal.id}}; // ID du produit
+						const quantity = 1;
+						const updateURL = `{% url 'base:add_to_cart' meal.id 0 %}`;
+						// Effectuer une requête AJAX pour ajouter le produit au panier
+						fetch(updateURL)
+							.then(response => {
+								// Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+							})
+							.catch(error => {
+								console.error('Erreur lors de l\'ajout au panier :', error);
+							});
+					});
+
+				</script>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+	</div>
+	<!-- end more products -->
+
 {% endblock %}
