@@ -1,0 +1,237 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block extracss %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+{% endblock %}
+
+{% block content %}
+		<!-- features list section -->
+
+	<!-- end features list section -->
+
+	<!-- breadcrumb-section -->
+	<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p>Commandez avez chapfood</p>
+						<h1>Commandez</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end breadcrumb section -->
+
+
+
+	<!-- check out section -->
+	<div class="checkout-section mt-150 mb-150">
+		<div class="container">
+            <form method="post" id="monFormulaire">
+                {% csrf_token %}
+			<div class="row">
+				<div class="col-lg-8">
+					<div class="checkout-accordion-wrap">
+						<div class="accordion" id="accordionExample">
+                            
+						  <div class="card single-accordion">
+						    <div class="card-header" id="headingOne">
+						      <h5 class="mb-0">
+						        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+						          Informations pour la livraison
+						        </button>
+						      </h5>
+						    </div>
+
+						    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+						      <div class="card-body">
+						        <div class="billing-address-form">
+						        	
+                                        
+                                    <div class="form-group form-check">
+                                        {{ form.is_delivery }}
+                                        <label class="form-check-label" for="{{ form.is_delivery.id_for_label }}"><h5>Cliquez ici pour vous faire livrez à domicile</h5></label>
+                                    </div>
+
+                                    <div class="form-group rounded">
+                                        <label for="{{ form.delivery_address.id_for_label }}"><h5>Indiquez l'addresse de livraison</h5></label>
+                                        {{ form.delivery_address }}
+                                    </div>
+
+                                    <div class="form-group rounded">
+                                        <label for="{{ form.pickup_time.id_for_label }}"><h5>Indiquer l'heure a laquelle vous voulez passez prendre le repas</h5></label>
+                                        {{ form.pickup_time }}
+                                    </div>
+						        </div>
+						      </div>
+						    </div>
+						  </div>
+						  <div class="card single-accordion">
+						    <div class="card-header" id="headingTwo">
+						      <h5 class="mb-0">
+						        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+						          Paiement
+						        </button>
+						      </h5>
+						    </div>
+						    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+						      <div class="card-body">
+						        <div class="shipping-address-form">
+                                    <div class="form-group form-check">
+                                        {{ form.is_piece }}
+                                        <label class="form-check-label" for="{{ form.is_piece.id_for_label }}"><h5>Cliquez ici si vous avez la monnaie</h5></label>
+                                    </div>
+                                </div>
+                                <div class="shipping-address-form">
+                                    <div class="form-group rounded">
+                                        <label for="{{ form.monnaie.id_for_label }}"><h5>Indiquez la somme que vous avez : </h5></label>
+                                        {{ form.monnaie }}
+                                    </div>
+						        </div>
+						      </div>
+						    </div>
+						  </div>
+					
+						
+                        </div>
+
+					</div>
+				</div>
+
+				<div class="col-lg-4">
+					<div class="order-details-wrap">
+						<table class="order-details">
+							<thead>
+								<tr>
+									<th>Your order Details</th>
+									<th>Price</th>
+								</tr>
+							</thead>
+							<tbody class="order-details-body">
+								<tr>
+									<td>Product</td>
+									<td>Total</td>
+								</tr>
+                                {% for item in cart.cartitemmeal_set.all %}
+								<tr>
+									<td>{{ item.meal.name }}</td>
+									<td>{{item.calculate_item_total}}cfa</td>
+								</tr>
+                                {% endfor %}
+		
+							</tbody>
+							<tbody class="checkout-details">
+								<tr>
+									<td>Sous-Total</td>
+									<td>{{ order_total }}cfa</td>
+								</tr>
+								<tr>
+									<td>Livraison</td>
+									<td id="livraison">0cfa</td>
+								</tr>
+								<tr>
+									<td>Total</td>
+									<td id="total">{{order_total}}cfa</td>
+								</tr>
+							</tbody>
+						</table>
+						<a href="#" class="boxed-btn" type="submit" id="lienSoumettre">Place Order</a>
+					</div>
+				</div>
+			</div>
+            </form>
+		</div>
+	</div>
+	<!-- end check out section -->
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const isDeliveryCheckbox = document.querySelector('#id_is_delivery');
+        const deliveryAddressField = document.querySelector('#id_delivery_address');
+        const pickupTimeField = document.querySelector('#id_pickup_time');
+        const isPieceCheckbox = document.querySelector('#id_is_piece');
+        const monnaieField = document.querySelector('#id_monnaie');
+        const orderTotalInput = document.getElementById("order-total");
+        const total = document.getElementById("total");
+        const livraison = document.getElementById("livraison");
+        var totalActuelle = parseFloat(total.textContent.replace("cfa", ""));
+        const montantAjout = 500;
+        var nouveauTotal = 0;
+        console.log(total);
+        console.log(totalActuelle);
+
+        // Désactiver initialement le champ delivery_address
+        deliveryAddressField.disabled = true;
+
+        // Écouter les changements de la case à cocher
+        isDeliveryCheckbox.addEventListener('change', function () {
+            if (isDeliveryCheckbox.checked) {
+                // Si la case à cocher est cochée, désactiver le champ pickup_time et activer delivery_address
+                deliveryAddressField.disabled = false;
+                pickupTimeField.disabled = true;
+                //pickupTimeField.style.display = "none";
+                //orderTotalInput.value = {{ order_total }} + 500;
+                
+                 nouveauTotal = totalActuelle + montantAjout;
+                 livraison.textContent = montantAjout + "cfa"
+                 total.textContent = nouveauTotal + "cfa";
+                 console.log(total.textContent);
+                 console.log(nouveauTotal);
+            } else {
+                // Sinon, désactiver delivery_address et activer le champ pickup_time
+                deliveryAddressField.disabled = true;
+                pickupTimeField.disabled = false;
+                //orderTotalInput.value = {{ order_total }};
+                nouveauTotal = totalActuelle;
+                total.textContent = nouveauTotal + "cfa";
+                livraison.textContent = "0 cfa";
+            }
+
+        });
+        isPieceCheckbox.addEventListener('change', function () {
+            if (isPieceCheckbox.checked) {
+                // Si la case à cocher est cochée, désactiver le champ pickup_time et activer delivery_address
+                monnaieField.disabled = true;
+                
+            } else {
+                // Sinon, désactiver delivery_address et activer le champ pickup_time
+            monnaieField.disabled = false;
+            }});
+    });
+    $(document).ready(function() {
+        $('#id_pickup_time').on('blur', function() {
+            var pickupTime = $(this).val();
+            var currentTime = new Date();
+            var hours = currentTime.getHours();
+            var minutes = currentTime.getMinutes();
+            var currentTimeString = hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+
+            if (pickupTime < currentTimeString) {
+                alert("L'heure de prise de repas ne peut pas être antérieure à l'heure actuelle.");
+                $(this).val(''); // Effacez la valeur du champ
+            }
+        });
+    });
+    // Sélectionnez l'élément du lien
+var lienSoumettre = document.getElementById("lienSoumettre");
+
+// Sélectionnez le formulaire
+var monFormulaire = document.getElementById("monFormulaire");
+
+// Ajoutez un gestionnaire d'événements pour le clic sur le lien
+lienSoumettre.addEventListener("click", function(event) {
+  event.preventDefault(); // Empêche le comportement par défaut (redirection)
+
+  // Soumettez le formulaire
+  monFormulaire.submit();
+});
+
+</script>
+
+
+
+
+{%endblock%}

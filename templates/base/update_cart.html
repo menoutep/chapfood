@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Mise à jour du panier</h1>
+  <form method="post">
+    {% csrf_token %}
+    <label for="quantity">Quantité</label>
+    <input type="number" name="quantity" id="quantity" value="{{ item.quantity }}" min="1">
+    <button type="submit">Mettre à jour</button>
+  </form>
+  <a href="{% url 'base:cart' %}">Retour au panier</a>
+{% endblock %}

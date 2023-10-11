@@ -1,0 +1,59 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+
+    <!-- section -->
+<section class="resip_section">
+        <div class="container">
+            <div class="row">
+         <div class="col-md-12">
+       <div class="ourheading">
+    <h2>Nos Categories</h2>
+    
+    <div class="container">
+    {% for category in categories %}
+        <div class="row">
+            
+            <div class="col-md-12">
+                <div class="owl-carousel owl-theme">
+                    <div class="item">
+                        <div class="product_blog_img">
+                            <img src="{{ category.image.url }}" alt="#" />
+                        </div>
+                        <div class="product_blog_cont">
+                            <h3>{{ category.name}}</h3>
+                            <h4><span class="theme_color">$</span>10</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<div class="bg_bg">
+    <!-- about -->
+    <!-- end about -->
+    <!-- blog -->
+    <div class="blog">
+        <div class="container">
+            <div class="row">
+            {% for meal in meals %}
+                <div class="col-md-12">
+                    <div class="title">
+                        <i><img src="{{ meal.image.url }}" alt="#"/></i>
+                        <h2>{{ meal.name}}</h2>
+                        <span>{{ meal.description}} <h3>{{ meal.preparation_time}}</h3></span>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end blog -->
+
+{% endblock %}
