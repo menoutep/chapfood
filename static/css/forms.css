@@ -1,0 +1,48 @@
+/* styles.css (CSS personnalisé) */
+
+/* Stylisation générale du formulaire */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Stylisation pour les étiquettes (labels) */
+label {
+    font-weight: bold;
+}
+
+/* Stylisation pour les cases à cocher */
+.custom-control-label::before,
+.custom-control-label::after {
+    top: 0.3rem;
+}
+
+/* Stylisation pour les boutons radio */
+.custom-control-label::before,
+.custom-control-label::after {
+    top: 0.3rem;
+}
+
+/* Stylisation pour les boutons de type "submit" */
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    padding: 10px 20px;
+}
+
+/* Stylisation pour les messages d'erreur */
+.error-message {
+    color: #dc3545;
+    font-size: 14px;
+}
+
+/* Ajoutez une classe "disabled" pour désactiver les champs */
+.disabled {
+    background-color: #f8f9fa;
+    pointer-events: none;
+    color: #6c757d;
+}
+
+/* Ajoutez une classe "hidden" pour masquer les éléments */
+.hidden {
+    display: none;
+}

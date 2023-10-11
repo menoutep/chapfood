@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">{{ meal.name }}</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{{ meal.image.url|safe }}" class="img-fluid" alt="{{ meal.name }}">
+        </div>
+        <div class="col-md-6">
+            <p>{{ meal.description }}</p>
+            <p>Prix : ${{ meal.price }}</p>
+            <a href="{% url 'base:add_to_cart' meal.id %}" class="btn btn-primary">Ajouter au Panier</a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

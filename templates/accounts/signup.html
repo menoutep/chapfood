@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/signup.css' %}">
+    <title>Inscription</title>
+</head>
+<body>
+    <h2>Inscription</h2>
+    <form method="post">
+        {% csrf_token %}
+        <!-- Champ de nom d'utilisateur -->
+        <label for="id_username">Nom d'utilisateur :</label>
+        <input type="text" id="id_username" name="username" required>
+        
+        <!-- Champ d'adresse e-mail -->
+        <label for="id_email">Adresse e-mail :</label>
+        <input type="email" id="id_email" name="email" required>
+
+        <label for="id_phone_number">Numéro de téléphone :</label>
+        <input type="tel" id="id_phone_number" name="phone_number" required>
+        
+        <!-- Champ de mot de passe -->
+        <label for="id_password">Mot de passe :</label>
+        <input type="password" id="id_password" name="password1" required>
+        
+        <!-- Champ de confirmation du mot de passe -->
+        <label for="id_confirm_password">Confirmer le mot de passe :</label>
+        <input type="password" id="id_confirm_password" name="password2" required>
+        
+        <!-- Autres champs personnalisés si nécessaire -->
+        
+        <!-- Bouton de soumission du formulaire -->
+        <button type="submit">S'inscrire</button>
+    </form>
+    <script src="{% static 'js/signup.js' %}"></script>
+</body>
+</html>
+

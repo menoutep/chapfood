@@ -1,0 +1,99 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block content %}
+	<!-- breadcrumb-section -->
+	<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p>Frais et savoureux</p>
+						<h1>Nos repas</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end breadcrumb section -->
+
+	<!-- product section -->
+	<div class="product-section mt-150 mb-150" >
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="section-title">	
+						<h3><span class="orange-text">Nos</span> Produits</h3>
+						<p>Que vous soyez un amateur de saveurs exotiques, un adepte de la cuisine traditionnelle ou à la recherche d'options saines et équilibrées, nous avons quelque chose de spécial pour chacun d'entre vous. Chaque plat est préparé avec des ingrédients frais et de qualité supérieure, pour garantir que chaque bouchée soit un véritable régal pour vos papilles.</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="row" id="testo">
+                    {% for meal in meals %}
+				<div class="col-lg-4 col-md-6 text-center">
+					<div class="single-product-item">
+						<div class="product-image">
+							<a href="{% url 'base:meal_detail' meal.id %}"><img src="{{ meal.image.url }}" alt=""></a>
+						</div>
+						<h3>{{ meal.name}}</h3>
+						<p class="product-price"><span>Temps de cuisson : {{ meal.preparation_time}}</span> {{ meal.price}}cfa</p>
+                        
+						<a href="#" class="cart-btn" id ="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+					</div>
+				</div>
+				    <script>
+        // script.js
+				// JavaScript pour gérer les interactions avec le panier
+				// Par exemple, ajouter un produit au panier en utilisant Fetch API
+
+					document.getElementById('add-to-cart-button-{{ meal.id }}').addEventListener('click', function (event) {
+						event.preventDefault();
+						// Récupérer le produit à ajouter
+						const productID = {{meal.id}}; // ID du produit
+
+						// Effectuer une requête AJAX pour ajouter le produit au panier
+						fetch(`{% url 'base:add_to_cart' meal.id %}`)
+							.then(response => {
+								// Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+							})
+							.catch(error => {
+								console.error('Erreur lors de l\'ajout au panier :', error);
+							});
+					});
+
+
+    </script>
+				    {% endfor %}
+			</div>
+		</div>
+	</div>
+	<section class="cart-banner pt-100 pb-100">
+    	<div class="container">
+        	<div class="row clearfix">
+            	<!--Image Column-->
+            	<div class="image-column col-lg-6">
+                	<div class="image">
+                    	<div class="price-box">
+                        	<div class="inner-price">
+                                <span class="price">
+                                    <strong>30%</strong> <br> de réduction
+                                </span>
+                            </div>
+                        </div>
+                    	<img src="{% static 'assets/img/a.jpg'%}" alt="">
+                    </div>
+                </div>
+                <!--Content Column-->
+                <div class="content-column col-lg-6">
+					<h3><span class="orange-text">Affaire</span> du mois</h3>
+                    <h4>{{cheapest_meal.name}}</h4>
+                    <div class="text">{{cheapest_meal.description}}</div>
+                    <!--Countdown Timer-->
+                    <div class="time-counter"><div class="time-countdown clearfix" data-countdown="2020/2/01"><div class="counter-column"><div class="inner"><span class="count">00</span>Days</div></div> <div class="counter-column"><div class="inner"><span class="count">00</span>Hours</div></div>  <div class="counter-column"><div class="inner"><span class="count">00</span>Mins</div></div>  <div class="counter-column"><div class="inner"><span class="count">00</span>Secs</div></div></div></div>
+                	<a href="{% url 'base:add_to_cart' cheapest_meal.id %}" class="cart-btn mt-3"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
