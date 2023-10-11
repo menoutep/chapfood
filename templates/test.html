@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>Votre panier</h1>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Repas</th>
+        <th>Quantité</th>
+        <th>Prix unitaire</th>
+        <th>Prix total</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart.cartitemmeal_set.all %}
+        <tr>
+          <td>{{ item.meal.name }}</td>
+          <td>
+            <form method="post" action="{% url 'base:update_cart' item.meal.id %}">
+              {% csrf_token %}
+              <input class="rounded-input" type="number" name="quantity" value="{{ item.quantity }}" min="1">
+              <button class="btn btn-secondary" type="submit">Mettre à jour</button>
+            </form>
+          </td>
+          <td>{{ item.meal.price }}</td>
+          <td>{{ item.calculate_item_total }}</td>
+          <td>
+                          
+            <a href="{% url 'base:remove_from_cart' item.meal.id %}"><button class="btn btn-danger">Retirer</button></a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p>Total du panier : {{ total }}</p>
+  <a href="{% url 'base:checkout' %}" class="btn btn-primary">Passer la commande</a>
+{% endblock %}

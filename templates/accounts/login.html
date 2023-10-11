@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Connexion</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label for="id_username">Nom d'utilisateur :</label>
+            <input type="text" id="id_username" name="username" required>
+            
+            <label for="id_password">Mot de passe :</label>
+            <input type="password" id="id_password" name="password" required>
+            
+            <button type="submit">Se connecter</button>
+        </form>
+        <p class="error-message" id="error-message">{{ error_message }}</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block content %}
+	<!-- cart -->
+<div class="breadcrumb-section breadcrumb-bg">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="breadcrumb-text">
+						<p>Solution Innovante</p>
+						<h1>Panier</h1>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cart-section mt-150 mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-md-12">
+					<div class="cart-table-wrap">
+						<table class="cart-table">
+							<thead class="cart-table-head">
+								<tr class="table-head-row">
+									<th class="product-remove"></th>
+									<th class="product-image">Product Image</th>
+									<th class="product-name">Name</th>
+									<th class="product-price">Price</th>
+									<th class="product-quantity">Quantity</th>
+									<th class="product-total">Total</th>
+								</tr>
+							</thead>
+							<tbody>
+                  {% for item in cart.cartitemmeal_set.all %}
+								<tr class="table-body-row">
+									<td class="product-remove"><a href="#" id="remove-from-cart-{{ item.meal.id }}"><i class="far fa-window-close"></i></a></td>
+									<td class="product-image"><img src="{{ item.meal.image.url }}" alt=""></td>
+									<td class="product-name">{{ item.meal.name }}</td>
+									<td class="product-price">{{ item.meal.price }}cfa</td>
+									<td class="product-quantity">
+									
+									<input class="rounded-input" type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity-input-{{ item.meal.id }}">
+									
+									
+									
+									</td>
+                      
+									<td class="product-total" id="product_total-{{ item.meal.id }}">{{ item.calculate_item_total }}</td>
+									<script>
+    									// Sélectionnez l'élément d'entrée de quantité et le formulaire
+										//const quantityInput = document.getElementById("quantity-input-{{ item.meal.id }}");
+										//const cartUpdateForm = document.getElementById("cart-update-form-{{ item.meal.id }}");
+										
+										var newQuantity = 0;
+										// Écoutez l'événement de modification de la quantité
+										document.getElementById("quantity-input-{{ item.meal.id }}").addEventListener("change", function (event) {
+											event.preventDefault();
+											newQuantity = document.getElementById("quantity-input-{{ item.meal.id }}").value;
+											const updateURL = `{% url 'base:update_cart' item.meal.id 0 %}`.replace('0', newQuantity);
+											// Soumettez le formulaire lorsque la quantité est modifiée
+											fetch(updateURL)
+												.then(response => response.json())
+												.then(data => {
+													// Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+													
+													document.getElementById("product_total-{{ item.meal.id }}").textContent = data.item_total;
+													document.getElementById("total_cart").textContent = data.cart_total;
+													document.getElementById("sub_total_cart").textContent = data.cart_total;
+
+												})
+												.catch(error => {
+													console.error('Erreur lors de l\'ajout au panier :', error);
+												});
+										});
+										document.getElementById('remove-from-cart-{{ item.meal.id }}').addEventListener('click', function (event) {
+											event.preventDefault();
+											// Récupérer le produit à ajouter
+											//const productID = {{meal.id}}; // ID du produit
+
+											// Effectuer une requête AJAX pour ajouter le produit au panier
+											fetch(`{% url 'base:remove_from_cart' item.meal.id %}`)
+												.then(response => response.json())
+												.then(data => {
+													// Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+													
+													//document.getElementById("product_total-{{ item.meal.id }}").textContent = data.item_total;
+													document.getElementById("total_cart").textContent = data.cart_total;
+													document.getElementById("sub_total_cart").textContent = data.cart_total;
+													const row = this.closest('tr'); // Trouvez l'élément tr parent
+													row.remove(); // Supprimez la ligne du panier du DOM
+												})
+												.catch(error => {
+													console.error('Erreur lors de l\'ajout au panier :', error);
+												});										
+										});
+									</script>
+
+								</tr>
+                {%endfor%}
+		
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+				<div class="col-lg-4">
+					<div class="total-section">
+						<table class="total-table">
+							<thead class="total-table-head">
+								<tr class="table-total-row">
+									<th>Total</th>
+									<th>Price</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr class="total-data">
+									<td><strong>Subtotal: </strong></td>
+									<td id="sub_total_cart">{{total}}cfa</td>
+								</tr>
+								<tr class="total-data">
+									<td><strong>TVA: </strong></td>
+									<td>0</td>
+								</tr>
+								<tr class="total-data">
+									<td><strong>Total: </strong></td>
+									<td id="total_cart">{{total}}cfa</td>
+								</tr>
+							</tbody>
+						</table>
+						<div class="cart-buttons">
+						
+							<a href="{% url 'base:checkout' %}" class="boxed-btn black">Check Out</a>
+						</div>
+					</div>
+
+				
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end cart -->
+{% endblock %}

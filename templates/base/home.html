@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+    <title>Ma Boutique en Ligne</title>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="logo.png" alt="Logo de la boutique">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Accueil</a></li>
+                <li><a href="#">Produits</a></li>
+                <li><a href="#">À Propos</a></li>
+                <li><a href="#">Contact</a></li>
+                <li>{% if user.is_authenticated %}
+                    <p>Bienvenue, {{ user.username }} !</p>
+                    <p>Adresse e-mail : {{ user.email }}</p>
+                    <!-- Autres informations de l'utilisateur -->
+                    
+                        {% else %}
+                            <p>Connectez-vous pour voir vos informations.</p>
+                            <a href="{% url 'accounts:login' %}">Se connecter</a>
+                        {% endif %}
+                </li>
+
+            </ul>
+        </nav>
+        <div class="cart">
+            <a href="#">Panier</a>
+        </div>
+    </header>
+    
+    <section class="banner">
+        <img src="banner.jpg" alt="Bannière promotionnelle">
+    </section>
+    
+    <section class="featured-products">
+        <h2>Produits en Vedette</h2>
+        <div class="product">
+            <img src="product1.jpg" alt="Produit 1">
+            <h3>Nom du Produit 1</h3>
+            <p>Prix : $99.99</p>
+            <button>Ajouter au Panier</button>
+        </div>
+        <!-- Ajoutez d'autres produits ici -->
+    </section>
+    
+    <footer>
+        <div class="footer-links">
+            <ul>
+                <li><a href="#">Politique de Confidentialité</a></li>
+                <li><a href="#">Conditions Générales</a></li>
+                <li><a href="#">FAQ</a></li>
+            </ul>
+        </div>
+        <div class="contact-info">
+            <p>Contactez-nous : contact@votre-boutique.com</p>
+        </div>
+        <div class="social-media">
+            <a href="#"><img src="facebook-icon.png" alt="Facebook"></a>
+            <a href="#"><img src="twitter-icon.png" alt="Twitter"></a>
+            <a href="#"><img src="instagram-icon.png" alt="Instagram"></a>
+        </div>
+    </footer>
+</body>
+</html>
