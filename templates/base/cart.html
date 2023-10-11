@@ -38,14 +38,9 @@
 									<td class="product-image"><img src="{{ item.meal.image.url }}" alt=""></td>
 									<td class="product-name">{{ item.meal.name }}</td>
 									<td class="product-price">{{ item.meal.price }}cfa</td>
-									<td class="product-quantity">
-									
-									<input class="rounded-input" type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity-input-{{ item.meal.id }}">
-									
-									
-									
-									</td>
-                      
+									<td class="product-quantity">								
+									<input class="rounded-input" type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity-input-{{ item.meal.id }}">									
+									</td>                      
 									<td class="product-total" id="product_total-{{ item.meal.id }}">{{ item.calculate_item_total }}</td>
 									<script>
     									// Sélectionnez l'élément d'entrée de quantité et le formulaire

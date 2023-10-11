@@ -47,25 +47,19 @@ def meal_list(request):
 
     return render(request, 'base/meal_list.html',context)
 
-def add_meal(request):
-    if request.method == 'POST':
-        form = MealForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('base:meal_list')
-    else:
-        form = MealForm()
-    return render(request, 'base/add_meal.html', {'form': form})
+
 
 def meal_detail(request, meal_id):
     meal = Meal.objects.get(pk=meal_id)
-    return render(request, 'base/meal_detail.html', {'meal': meal})
+    category = meal.category
 
-
-
+    # Récupérez trois repas de la même catégorie, en excluant le repas actuel
+    similar_meals = Meal.objects.filter(category=category).exclude(pk=meal_id)[:3]
+    
+    return render(request, 'base/meal_detail.html', {'meal': meal,'similar_meals':similar_meals})
 
 @login_required
-def add_to_cart(request, meal_id):
+def add_to_cart(request, meal_id,quantity):
     print(meal_id)
     try:
         meal = Meal.objects.get(id=meal_id)
@@ -75,15 +69,20 @@ def add_to_cart(request, meal_id):
         return redirect('base:meal_list')  # Rediriger vers la liste des repas ou une autre vue appropriée
 
     # Vérifier si l'utilisateur a déjà un panier, sinon, créez-en un
-    cart, created = CartItem.objects.get_or_create(user=request.user)
+    cart, created_ = CartItem.objects.get_or_create(user=request.user)
     
     # Vérifier si le repas est déjà dans le panier de l'utilisateur
     cart_item_meal, created = CartItemMeal.objects.get_or_create(cart_item=cart, meal=meal)
 
     # Augmenter la quantité si le repas est déjà dans le panier, sinon, l'ajouter au panier
     if not created:
-        cart_item_meal.quantity += 1
-        cart_item_meal.save()
+        if quantity == 0:
+            cart_item_meal.quantity += 1
+            cart_item_meal.save()
+        elif quantity >= 1:
+            cart_item_meal.quantity = quantity
+            cart_item_meal.save()
+
 
     # Calculer le total du panier
     cart.calculate_total()

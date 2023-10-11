@@ -6,9 +6,8 @@ urlpatterns = [
     
     path('', views.meal_list, name='meal_list'),
     path('index/', views.index, name='index'),
-    path('meals/add/', views.add_meal, name='add_meal'),
     path('meals/<int:meal_id>/', views.meal_detail, name='meal_detail'),
-    path('add_to_cart/<int:meal_id>/', views.add_to_cart, name='add_to_cart'),
+    path('add_to_cart/<int:meal_id>/<int:quantity>', views.add_to_cart, name='add_to_cart'),
     path('remove_from_cart/<int:meal_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('cart/', views.cart, name='cart'),
     path('update_cart/<int:meal_id>/<int:quantity>', views.update_cart, name='update_cart'),
