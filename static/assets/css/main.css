@@ -2415,8 +2415,10 @@ ul.social-link-team li a {
 
 .product-image img {
   width: 90%;
+  height:160px;
   border-radius: 5px;
   margin-bottom: 20px;
+
 }
 
 .single-product-item h3 {
