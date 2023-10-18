@@ -28,9 +28,9 @@
 				</div>
 				<div class="col-md-7">
 					<div class="single-product-content">
-						<h3>{{ meal.name }}</h3>
-						<p class="single-product-pricing"><span>Par unité</span>{{meal.price}} cfa</p>
-						<p>{{meal.description}}.</p>
+						<h3 style="color: #051922;">{{ meal.name }}</h3>
+						<p class="single-product-pricing" style="color: #051922;"><span style="color: #051922;">Par unité</span>{{meal.price}} cfa</p>
+						<p style="color: #051922;">{{meal.description}}.</p>
 						<div class="single-product-form">
 							
 								<input type="number" value="{{ meal.quantity }}" min = "0" placeholder="" id="quantity-input-{{ meal.id }}"><br>
@@ -59,7 +59,7 @@
                                                     });
                                                 </script>
 						</div>
-						<h4>Share:</h4>
+						<h4 style="color: #051922;">Share:</h4>
 						<ul class="product-share">
 							<li><a href=""><i class="fab fa-facebook-f"></i></a></li>
 							<li><a href=""><i class="fab fa-twitter"></i></a></li>
