@@ -6,8 +6,14 @@ from .forms import DeliveryForm
 from .models import Order
 from django.core.mail import send_mail
 from django.http import JsonResponse
-
+from django.db.models import Q
 # Create your views here.
+@login_required
+def calculate_order_total(cart):
+    # Calculez le montant total de la commande en fonction des repas dans le panier
+    total = sum(item.calculate_item_total() for item in cart.cartitemmeal_set.all())
+    return total
+
 
 
 def index(request):
@@ -18,9 +24,19 @@ def index(request):
         'categories':categories,
         'meals':meals,
         'cheapest_meal':cheapest_meal
-   
     }
     return render(request, 'base/index.html',context)
+
+def meal_list(request):
+    categories=Category.objects.all()
+    meals=Meal.objects.all()
+    cheapest_meal = Meal.objects.all().order_by('price').first()
+    context={
+        'categories':categories,
+        'meals':meals,
+        'cheapest_meal':cheapest_meal
+    }
+    return render(request, 'base/meal_list.html',context)
 
 
 def meals_by_category(request, category_id):
@@ -37,16 +53,6 @@ def meals_by_category(request, category_id):
 
 def contact(request):
     return render(request, 'base/contact.html')
-
-
-
-def meal_list(request):
-    meals = Meal.objects.all()
-    cheapest_meal = Meal.objects.all().order_by('price').first()
-    context = {'meals': meals,'cheapest_meal':cheapest_meal}
-
-    return render(request, 'base/meal_list.html',context)
-
 
 
 def meal_detail(request, meal_id):
@@ -139,11 +145,6 @@ def remove_from_cart(request, meal_id):
     redirect('base:cart')
     
     return JsonResponse(response_data)
-@login_required
-def calculate_order_total(cart):
-    # Calculez le montant total de la commande en fonction des repas dans le panier
-    total = sum(item.calculate_item_total() for item in cart.cartitemmeal_set.all())
-    return total
 
 
 

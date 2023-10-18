@@ -20,17 +20,20 @@
 	<div class="product-section mt-150 mb-150" >
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-8 offset-lg-2 text-center">
-					<div class="section-title">	
-						<h3><span class="orange-text">Nos</span> Produits</h3>
-						<p>Que vous soyez un amateur de saveurs exotiques, un adepte de la cuisine traditionnelle ou à la recherche d'options saines et équilibrées, nous avons quelque chose de spécial pour chacun d'entre vous. Chaque plat est préparé avec des ingrédients frais et de qualité supérieure, pour garantir que chaque bouchée soit un véritable régal pour vos papilles.</p>
+				<div class="col-md-12">
+					<div class="product-filters">
+						<ul>
+							<li class="active" data-filter="*">All</li>
+							{% for category in categories %}
+							<li data-filter=".{{ category.name }}">{{ category.name }}</li>
+							{% endfor %}
+						</ul>
 					</div>
 				</div>
 			</div>
-
-			<div class="row" id="testo">
+			<div class="row product-lists">
                     {% for meal in meals %}
-				<div class="col-lg-4 col-md-6 text-center">
+				<div class="col-lg-4 col-md-6 text-center {{ meal.category.name }}">
 					<div class="single-product-item">
 						<div class="product-image">
 							<a href="{% url 'base:meal_detail' meal.id %}"><img src="{{ meal.image.url }}" alt=""></a>
@@ -68,6 +71,7 @@
 			</div>
 		</div>
 	</div>
+	
 	<section class="cart-banner pt-100 pb-100">
     	<div class="container">
         	<div class="row clearfix">

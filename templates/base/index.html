@@ -124,43 +124,7 @@
 	<!-- end shop banner -->
 
 	<!-- latest news -->
-	<div class="latest-news pt-150 pb-150">
-		<div class="container">
-
-			<div class="row">
-				<div class="col-lg-8 offset-lg-2 text-center">
-					<div class="section-title">	
-						<h3><span class="orange-text">Nos</span> Categories</h3>
-						<p>Chez Chapfood, nous avons organisé notre menu en catégories soigneusement conçues pour répondre à une variété de goûts et de préférences. Chaque catégorie est une invitation à explorer des saveurs uniques et des combinaisons de plats qui vous séduiront à chaque commande. Voici un aperçu de nos catégories de repas .</p>
-					</div>
-				</div>
-			</div>
-
-			<div class="row">
-                {% for category in categories %}
-				<div class="col-lg-4 col-md-6">
-					<div class="single-latest-news">
-						<a href="{% url 'base:meals_by_category' category.id %}"><div class="latest-news-bg" style="background-image: url('{{ category.image.url }}');"></div></a>
-						<div class="news-text-box">
-							<h3><a href="{% url 'base:meals_by_category' category.id %}">{{category.name}}</a></h3>
-							<p class="blog-meta">
-								<span class="author"><i class="fas fa-utensils"></i> {{category.name}}</span>
-								<span class="date"><i class="badge"></i>{{ category.get_meal_count }}</span>
-							</p>
-							<p class="excerpt">{{category.description}}</p>
-							<a href="{% url 'base:meals_by_category' category.id %}" class="read-more-btn">read more <i class="fas fa-angle-right"></i></a>
-						</div>
-					</div>
-				</div>
-                {% endfor %}
-			</div>
-			<div class="row">
-				<div class="col-lg-12 text-center">
-					<a href="#" class="boxed-btn">More News</a>
-				</div>
-			</div>
-		</div>
-	</div>
+	
 	<!-- end latest news -->
 
 	<!-- logo carousel -->
