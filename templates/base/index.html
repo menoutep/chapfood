@@ -22,7 +22,7 @@
 				<div class="col-lg-4 col-md-6 text-center">
 					<div class="single-product-item">
 						<div class="product-image">
-							<a href="{% url 'base:meal_detail' meal.id %}"><img src="{{ meal.image.url }}" alt=""></a>
+							<a href="{% url 'base:meal_detail' meal.id %}"><img src="{{ meal.image.url|safe }}" alt=""></a>
 						</div>
 						<a href="{% url 'base:meal_detail' meal.id %}"><h3>{{ meal.name}}</h3></a>
 						<p class="product-price"><span>Temps de cuisson : {{ meal.preparation_time}}</span> {{ meal.price}}cfa</p>
