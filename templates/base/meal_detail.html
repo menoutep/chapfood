@@ -32,8 +32,7 @@
 						<p class="single-product-pricing" style="color: #051922;"><span style="color: #051922;">Par unité</span>{{meal.price}} cfa</p>
 						<p style="color: #051922;">{{meal.description}}.</p>
 						<div class="single-product-form">
-							
-								<input type="number" value="{{ meal.quantity }}" min = "0" placeholder="" id="quantity-input-{{ meal.id }}"><br>
+							<input type="number" value="{{ meal.quantity }}" min = "0" placeholder="" id="quantity-input-{{ meal.id }}"><br>
 							<a href="#" class="cart-btn" id ="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
 							<p><strong>Categories: </strong>{{meal.category.name}}</p>
                             					<script>
