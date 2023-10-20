@@ -29,25 +29,27 @@
 									</ul>
 								</li>
 								<li><a href="#">About</a></li>
-								<li><a href="#">Pages</a>
+								<li><a href="{% url 'base:meal_list' %}">shop</a>
 									<ul class="sub-menu">
 										<li><a href="{% url 'base:index' %}">Home</a></li>
-										<li><a href="#">About</a></li>
-										<li><a href="{% url 'base:cart' %}">Cart</a></li>
-										<li><a href="{% url 'base:checkout' %}">Check Out</a></li>
-										<li><a href="#">Contact</a></li>
-			
-										<li><a href="{% url 'base:meal_list' %}">Shop</a></li>
+										
+										<li><a href="{% url 'base:cart' %}">Mon panier</a></li>
+										<li><a href="{% url 'base:checkout' %}">Ma commande</a></li>
+										
+										<li><a href="{% url 'base:meal_list' %}">Nos repas</a></li>
 									</ul>
 								</li>
 
 								<li><a href="#">Contact</a></li>
-								<li><a href="shop.html">Shop</a>
+								<li><a href="#">Connexion</a>
 									<ul class="sub-menu">
-										<li><a href="{% url 'base:meal_list' %}">Shop</a></li>
-										<li><a href="{% url 'base:checkout' %}">Check Out</a></li>
-										<li><a href="#">Single Product</a></li>
-										<li><a href="{% url 'base:cart' %}">Cart</a></li>
+										<li><a href="{% url 'accounts:signup' %}">S'enregistrer</a></li>
+										{% if user.is_authenticated %}
+											<li><a href="{% url 'accounts:logout' %}">Se déconnecter</a></li>
+										{% else %}
+											<li><a href="{% url 'accounts:login' %}">Se connecter</a></li>
+										{% endif %}
+										
 									</ul>
 								</li>
 								<li>
