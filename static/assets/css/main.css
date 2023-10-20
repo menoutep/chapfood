@@ -2420,7 +2420,23 @@ ul.social-link-team li a {
   margin-bottom: 20px;
 
 }
+.product-image-cart {
+  padding: 30px;
+  padding-bottom: 0;
+}
 
+.product-image-cart img {
+  width: 90%;
+  border-radius: 5px;
+  margin-bottom: 20px;
+
+}
+td.product-image-cart img {
+  max-width: 50px;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  margin-bottom: 0;
+}
 .single-product-item h3 {
   font-size: 20px;
   font-weight: 600;
