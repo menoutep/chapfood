@@ -5,6 +5,12 @@
 {% endblock %}
 
 {% block content %}
+<style>
+.hidden-map {
+  display: none;
+}
+
+</style>
 		<!-- features list section -->
 
 	<!-- end features list section -->
@@ -48,18 +54,15 @@
 						    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
 						      <div class="card-body">
 						        <div class="billing-address-form">
-						        	
-                                        
                                     <div class="form-group form-check">
                                         {{ form.is_delivery }}
                                         <label class="form-check-label" for="{{ form.is_delivery.id_for_label }}"><h5>Cliquez ici pour vous faire livrez à domicile</h5></label>
                                     </div>
-
                                     <div class="form-group rounded">
-                                        <label for="{{ form.delivery_address.id_for_label }}"><h5>Indiquez l'addresse de livraison</h5></label>
+                                        <label for="{{ form.delivery_address.id_for_label }}"><h5 id="livraison-label">Indiquez l'addresse de livraison</h5></label>
+										<div id="map" style="height: 400px;" class="hidden-map"></div>
                                         {{ form.delivery_address }}
                                     </div>
-
                                     <div class="form-group rounded">
                                         <label for="{{ form.pickup_time.id_for_label }}"><h5>Indiquer l'heure a laquelle vous voulez passez prendre le repas</h5></label>
                                         {{ form.pickup_time }}
@@ -105,13 +108,13 @@
 						<table class="order-details">
 							<thead>
 								<tr>
-									<th>Your order Details</th>
-									<th>Price</th>
+									<th>Le détail de votre commande</th>
+									<th>Prix</th>
 								</tr>
 							</thead>
 							<tbody class="order-details-body">
 								<tr>
-									<td>Product</td>
+									<td>Produits</td>
 									<td>Total</td>
 								</tr>
                                 {% for item in cart.cartitemmeal_set.all %}
@@ -137,7 +140,7 @@
 								</tr>
 							</tbody>
 						</table>
-						<a href="#" class="boxed-btn" type="submit" id="lienSoumettre">Place Order</a>
+						<a href="#" class="boxed-btn" type="submit" id="lienSoumettre">Valider la commande</a>
 					</div>
 				</div>
 			</div>
@@ -151,6 +154,8 @@
     document.addEventListener('DOMContentLoaded', function () {
         const isDeliveryCheckbox = document.querySelector('#id_is_delivery');
         const deliveryAddressField = document.querySelector('#id_delivery_address');
+		deliveryAddressField.style.display = "none";
+	
         const pickupTimeField = document.querySelector('#id_pickup_time');
         const isPieceCheckbox = document.querySelector('#id_is_piece');
         const monnaieField = document.querySelector('#id_monnaie');
@@ -160,8 +165,7 @@
         var totalActuelle = parseFloat(total.textContent.replace("cfa", ""));
         const montantAjout = 500;
         var nouveauTotal = 0;
-        console.log(total);
-        console.log(totalActuelle);
+       
 
         // Désactiver initialement le champ delivery_address
         deliveryAddressField.disabled = true;
@@ -172,14 +176,27 @@
                 // Si la case à cocher est cochée, désactiver le champ pickup_time et activer delivery_address
                 deliveryAddressField.disabled = false;
                 pickupTimeField.disabled = true;
-                //pickupTimeField.style.display = "none";
-                //orderTotalInput.value = {{ order_total }} + 500;
+                nouveauTotal = totalActuelle + montantAjout;
+                livraison.textContent = montantAjout + "cfa"
+                total.textContent = nouveauTotal + "cfa";
                 
-                 nouveauTotal = totalActuelle + montantAjout;
-                 livraison.textContent = montantAjout + "cfa"
-                 total.textContent = nouveauTotal + "cfa";
-                 console.log(total.textContent);
-                 console.log(nouveauTotal);
+				var map = L.map('map').setView([5.217667827913414,-3.7607097752205902], 13);
+
+				var deliveryMarker = L.marker([0, 0], { draggable: true }).addTo(map);
+
+				map.on('click', function(e) {
+					var latlng = e.latlng;
+					deliveryMarker.setLatLng(latlng);
+
+					// Mettez à jour le champ de formulaire avec les nouvelles coordonnées
+					document.getElementById('id_delivery_address').value = latlng.lat + ',' + latlng.lng;
+				});
+
+				L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					maxZoom: 19,
+				}).addTo(map);
+				
+
             } else {
                 // Sinon, désactiver delivery_address et activer le champ pickup_time
                 deliveryAddressField.disabled = true;
@@ -188,6 +205,7 @@
                 nouveauTotal = totalActuelle;
                 total.textContent = nouveauTotal + "cfa";
                 livraison.textContent = "0 cfa";
+				
             }
 
         });
@@ -215,6 +233,32 @@
             }
         });
     });
+	
+  // Fonction pour gérer les modifications de la case à cocher
+  function toggleMapVisibility() {
+    var isDeliveryCheckbox = document.getElementById('id_is_delivery');
+    var mapContainer = document.getElementById('map');
+	var deliveryLabel = document.getElementById("livraison-label");
+
+    if (isDeliveryCheckbox.checked) {
+      // Case à cocher cochée : afficher la carte
+      mapContainer.classList.remove('hidden-map');
+	  deliveryLabel.classList.remove('hidden-map');
+    } else {
+      // Case à cocher décochée : masquer la carte
+      mapContainer.classList.add('hidden-map');
+	  deliveryLabel.classList.add('hidden-map');
+    }
+  }
+
+  // Attachez un gestionnaire d'événement à la case à cocher
+  var isDeliveryCheckbox = document.getElementById('id_is_delivery');
+  isDeliveryCheckbox.addEventListener('change', toggleMapVisibility);
+
+  // Appelez la fonction au chargement de la page pour configurer l'état initial
+  toggleMapVisibility();
+
+
     // Sélectionnez l'élément du lien
 var lienSoumettre = document.getElementById("lienSoumettre");
 
