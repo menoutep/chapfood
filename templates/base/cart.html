@@ -24,7 +24,7 @@
 							<thead class="cart-table-head">
 								<tr class="table-head-row">
 									<th class="product-remove"></th>
-									<th class="product-image">Product Image</th>
+									<th class="product-image-cart">Product Image</th>
 									<th class="product-name">Name</th>
 									<th class="product-price">Price</th>
 									<th class="product-quantity">Quantity</th>
@@ -35,7 +35,7 @@
                   {% for item in cart.cartitemmeal_set.all %}
 								<tr class="table-body-row">
 									<td class="product-remove"><a href="#" id="remove-from-cart-{{ item.meal.id }}"><i class="far fa-window-close"></i></a></td>
-									<td class="product-image"><img src="{{ item.meal.image.url }}" alt=""></td>
+									<td class="product-image-cart"><img src="{{ item.meal.image.url }}" alt=""></td>
 									<td class="product-name">{{ item.meal.name }}</td>
 									<td class="product-price">{{ item.meal.price }}cfa</td>
 									<td class="product-quantity">								
