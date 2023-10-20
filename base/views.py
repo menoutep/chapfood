@@ -54,6 +54,9 @@ def meals_by_category(request, category_id):
 def contact(request):
     return render(request, 'base/contact.html')
 
+def about(request):
+    return render(request, 'base/about.html')
+
 
 def meal_detail(request, meal_id):
     meal = Meal.objects.get(pk=meal_id)
