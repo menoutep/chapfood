@@ -1,4 +1,10 @@
 {% load static %}
+<style>
+#sticky-logo {
+    display: none;
+}
+
+</style>
 	<div class="top-header-area" id="sticker">
 		<div class="container">
 			<div class="row">
@@ -7,8 +13,8 @@
 						<!-- logo -->
 						<div class="site-logo">
 							<a href="{% url 'base:index' %}">
-							
-								<img src="{% static 'assets/img/logo.png'%}" alt="">
+								<img id="logo" src="{% static 'assets/img/chapfood.png'%}" alt="">
+								<img id="sticky-logo" src="{% static 'assets/img/logo2.png' %}" alt="Sticky Logo">
 							</a>
 						</div>
 						<!-- logo -->
@@ -60,3 +66,19 @@
 			</div>
 		</div>
 	</div>
+	<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const originalLogo = document.getElementById("logo");
+        const stickyLogo = document.getElementById("sticky-logo");
+
+        window.addEventListener("scroll", function() {
+            if (window.scrollY > 0) { // Vous pouvez ajuster cette valeur en fonction de la position de défilement où vous voulez changer le logo.
+                originalLogo.style.display = "none";
+                stickyLogo.style.display = "block";
+            } else {
+                originalLogo.style.display = "block";
+                stickyLogo.style.display = "none";
+            }
+        });
+    });
+</script>
