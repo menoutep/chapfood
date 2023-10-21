@@ -1,6 +1,7 @@
 from django import forms
 from .models import Meal, Category
 from django.utils import timezone
+from django.core.validators import RegexValidator
 class MealForm(forms.ModelForm):
     # Champ "category" avec liste déroulante (select) de catégories disponibles
     category = forms.ModelChoiceField(queryset=Category.objects.all(), widget=forms.Select(attrs={'class': 'form-control'}))
@@ -61,3 +62,17 @@ class DeliveryForm(forms.Form):
 
                 if pickup_time < current_time:
                     self.add_error('pickup_time', "L'heure de prise de repas ne peut pas être antérieure à l'heure actuelle.")
+
+
+phone_regex = RegexValidator(
+    regex=r'^\+?1?\d{9,15}$',  # Modifiez cette regex en fonction de vos besoins
+    message="Le numéro de téléphone doit être au format: '+999999999'. Il peut contenir jusqu'à 15 chiffres."
+)
+
+class ContactForm(forms.Form):
+    name = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Name','id':"name"}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'Email','id':'email'}))
+    phone = forms.CharField(max_length=20, validators=[phone_regex], widget=forms.TextInput(attrs={'placeholder': 'Phone', 'id': 'phone'}))
+    subject = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'placeholder': 'Sujet','id':'subject'}))
+    message = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Message','id':'message', 'cols':'30', 'rows':'10'}))
+   
