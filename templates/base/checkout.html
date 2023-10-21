@@ -180,22 +180,33 @@
                 livraison.textContent = montantAjout + "cfa"
                 total.textContent = nouveauTotal + "cfa";
                 
+
 				var map = L.map('map').setView([5.217667827913414,-3.7607097752205902], 13);
-
 				var deliveryMarker = L.marker([0, 0], { draggable: true }).addTo(map);
+					
 
-				map.on('click', function(e) {
-					var latlng = e.latlng;
-					deliveryMarker.setLatLng(latlng);
+					// Obtenez la géolocalisation de l'utilisateur
+					navigator.geolocation.getCurrentPosition(function(position) {
+						var userLat = position.coords.latitude;
+						var userLng = position.coords.longitude;
 
-					// Mettez à jour le champ de formulaire avec les nouvelles coordonnées
-					document.getElementById('id_delivery_address').value = latlng.lat + ',' + latlng.lng;
-				});
+						// Placez un marqueur pour indiquer la position de l'utilisateur
+						var userMarker = L.marker([userLat, userLng]).addTo(map);
+						userMarker.bindPopup("Votre position").openPopup();
 
-				L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-					maxZoom: 19,
-				}).addTo(map);
-				
+						map.setView([userLat, userLng], 13);  // Centrez la carte sur la position de l'utilisateur
+						map.on('click', function(e) {
+									var latlng = e.latlng;
+									deliveryMarker.setLatLng(latlng);
+
+									// Mettez à jour le champ de formulaire avec les nouvelles coordonnées
+									document.getElementById('id_delivery_address').value = latlng.lat + ',' + latlng.lng;
+								});
+							});
+					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+						maxZoom: 19,
+						attribution: 'OpenStreetMap'
+					}).addTo(map);
 
             } else {
                 // Sinon, désactiver delivery_address et activer le champ pickup_time
@@ -258,7 +269,6 @@
   // Appelez la fonction au chargement de la page pour configurer l'état initial
   toggleMapVisibility();
 
-
     // Sélectionnez l'élément du lien
 var lienSoumettre = document.getElementById("lienSoumettre");
 
@@ -274,8 +284,5 @@ lienSoumettre.addEventListener("click", function(event) {
 });
 
 </script>
-
-
-
 
 {%endblock%}

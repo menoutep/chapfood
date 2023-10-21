@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import Meal, CartItem, CartItemMeal,Category
-from .forms import MealForm
+from .forms import MealForm,ContactForm
 from django.contrib.auth.decorators import login_required
 from .forms import DeliveryForm
 from .models import Order
@@ -52,7 +52,24 @@ def meals_by_category(request, category_id):
 
 
 def contact(request):
-    return render(request, 'base/contact.html')
+    form = ContactForm() 
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            name=form.cleaned_data["name"]
+            email=form.cleaned_data["email"]
+            phone=form.cleaned_data["phone"]
+            message=form.cleaned_data["message"]
+            subject=form.cleaned_data["subject"]
+            subject = f'Message contact de {name} au sujet de {subject}'
+            message += f"le numero de l'utilisateur est {phone}:\n\n"
+            message += f'le message est : {message},\n\n'
+            from_email = 'jozacoder@gmail.com'  # Remplacez par votre adresse e-mail
+            recipient_list = ['josephzabre@gmail.com']  # Adresse e-mail du destinataire (utilisateur)            
+            send_mail(subject, message, from_email, recipient_list)
+        else:
+            form = ContactForm()
+    return render(request, 'base/contact.html',{'form': form})
 
 def about(request):
     return render(request, 'base/about.html')
@@ -150,13 +167,6 @@ def remove_from_cart(request, meal_id):
     return JsonResponse(response_data)
 
 
-
-  # Importez le modèle Order
-
-
-
-
-
 @login_required
 def checkout(request):
     # Récupérez le panier de l'utilisateur connecté
@@ -233,15 +243,13 @@ def send_order_email(order):
 
     else:
         message += f"Le client n'a pas la monnaie il a : {order.monnaie}. \n"
-        
-
-        
-
-    
     # Envoyez l'e-mail
     from_email = 'jozacoder@gmail.com'  # Remplacez par votre adresse e-mail
     recipient_list = ['josephzabre@gmail.com']  # Adresse e-mail du destinataire (utilisateur)
     
     send_mail(subject, message, from_email, recipient_list)
+
+
+    
 
 
