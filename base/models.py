@@ -27,7 +27,6 @@ class Meal(models.Model):
         return self.name
     
 
-
 class CartItem(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     meals = models.ManyToManyField(Meal, through='CartItemMeal')
@@ -39,7 +38,6 @@ class CartItem(models.Model):
         self.total = total
         self.save()
         return self.total
-
 
     def __str__(self):
         return f"Panier de {self.user.username}"
@@ -69,6 +67,7 @@ class Order(models.Model):
     is_piece = models.BooleanField(default=False)
     monnaie = models.DecimalField(max_digits=15, decimal_places=2,blank=True,null=True)
     pickup_time = models.DateTimeField(default=timezone.now)
+    waiting = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Commande de {self.user.username}"
