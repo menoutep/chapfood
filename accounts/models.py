@@ -8,4 +8,7 @@ class CustomUser(User):
     # Ajoutez d'autres champs personnalisés si nécessaire
 
     def __str__(self):
-        return self.username
+        return self.username 
+
+
+

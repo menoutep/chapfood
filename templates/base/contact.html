@@ -27,92 +27,92 @@
 						<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur, ratione! Laboriosam est, assumenda. Perferendis, quo alias quaerat aliquid. Corporis ipsum minus voluptate? Dolore, esse natus!</p>
 					</div>
 				 	<div id="form_status"></div>
-					<div class="contact-form">
-						<form method="POST" id="fruitkha-contact" onsubmit="return validateForm()">
-							{% csrf_token %}
-							<p>
-								{{ form.name }}
-								{{ form.email }}
-							</p>
-							<p>
-								{{ form.phone }}
-								{{ form.phone.errors }}
-								{{ form.subject }}								
-							</p>
-							<p>{{ form.message }}</p>
-							<p><input type="submit" value="Submit"></p>
-						</form>
+						<div class="contact-form">
+							<form method="POST" id="fruitkha-contact" onsubmit="return validateForm()">
+								{% csrf_token %}
+								<p>
+									{{ form.name }}
+									{{ form.email }}
+								</p>
+								<p>
+									{{ form.phone }}
+									{{ form.phone.errors }}
+									{{ form.subject }}								
+								</p>
+								<p>{{ form.message }}</p>
+								<p><input type="submit" value="Submit"></p>
+							</form>
 
-						
+							
 
-				<!-- Éléments pour afficher les messages d'erreur -->
-				<div id="name-error" style="color: red;"></div>
-				<div id="email-error" style="color: red;"></div>
-				<div id="phone-error" style="color: red;"></div>
-				<div id="subject-error" style="color: red;"></div>
-				<div id="message-error" style="color: red;"></div>
+							<!-- Éléments pour afficher les messages d'erreur -->
+							<div id="name-error" style="color: red;"></div>
+							<div id="email-error" style="color: red;"></div>
+							<div id="phone-error" style="color: red;"></div>
+							<div id="subject-error" style="color: red;"></div>
+							<div id="message-error" style="color: red;"></div>
 
-				<script>
-					function validateForm() {
-						var name = document.getElementById("name").value;
-						var email = document.getElementById("email").value;
-						var phone = document.getElementById("phone").value;
-						var subject = document.getElementById("subject").value;
-						var message = document.getElementById("message").value;
-						
-						var isValid = true;
+							<script>
+								function validateForm() {
+									var name = document.getElementById("name").value;
+									var email = document.getElementById("email").value;
+									var phone = document.getElementById("phone").value;
+									var subject = document.getElementById("subject").value;
+									var message = document.getElementById("message").value;
+									
+									var isValid = true;
 
-						// Validation pour le champ "name" (contient un nom)
-						if (!/^[a-zA-Z\s]*$/.test(name)) {
-							document.getElementById("name-error").textContent = "Name must contain a valid name.";
-							isValid = false;
-						} else {
-							document.getElementById("name-error").textContent = "";
-						}
+									// Validation pour le champ "name" (contient un nom)
+									if (!/^[a-zA-Z\s]*$/.test(name)) {
+										document.getElementById("name-error").textContent = "Name must contain a valid name.";
+										isValid = false;
+									} else {
+										document.getElementById("name-error").textContent = "";
+									}
 
-						// Validation pour le champ "phone" (numéro de téléphone)
-						if (!/^\d{10}$/.test(phone)) {
-							document.getElementById("phone-error").textContent = "Phone must be a 10-digit number.";
-							isValid = false;
-						} else {
-							document.getElementById("phone-error").textContent = "";
-						}
+									// Validation pour le champ "phone" (numéro de téléphone)
+									if (!/^\d{10}$/.test(phone)) {
+										document.getElementById("phone-error").textContent = "Phone must be a 10-digit number.";
+										isValid = false;
+									} else {
+										document.getElementById("phone-error").textContent = "";
+									}
 
-						// Validation pour le champ "email" (adresse email)
-						if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
-							document.getElementById("email-error").textContent = "Email must be a valid email address.";
-							isValid = false;
-						} else {
-							document.getElementById("email-error").textContent = "";
-						}
+									// Validation pour le champ "email" (adresse email)
+									if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email)) {
+										document.getElementById("email-error").textContent = "Email must be a valid email address.";
+										isValid = false;
+									} else {
+										document.getElementById("email-error").textContent = "";
+									}
 
-						// Validation pour le champ "subject" (phrase ou mot)
-						if (!/^[a-zA-Z\s]*$/.test(subject)) {
-							document.getElementById("subject-error").textContent = "Subject must contain a valid word or phrase.";
-							isValid = false;
-						} else {
-							document.getElementById("subject-error").textContent = "";
-						}
+									// Validation pour le champ "subject" (phrase ou mot)
+									if (!/^[a-zA-Z\s]*$/.test(subject)) {
+										document.getElementById("subject-error").textContent = "Subject must contain a valid word or phrase.";
+										isValid = false;
+									} else {
+										document.getElementById("subject-error").textContent = "";
+									}
 
-						// Validation pour le champ "message" (texte)
-						if (!message.trim()) {
-							document.getElementById("message-error").textContent = "Message is required.";
-							isValid = false;
-						} else {
-							document.getElementById("message-error").textContent = "";
-						}
+									// Validation pour le champ "message" (texte)
+									if (!message.trim()) {
+										document.getElementById("message-error").textContent = "Message is required.";
+										isValid = false;
+									} else {
+										document.getElementById("message-error").textContent = "";
+									}
 
-						// Empêcher la soumission du formulaire si des erreurs sont détectées
-						if (!isValid) {
-							return false;
-						}
-					}
-				</script>
+									// Empêcher la soumission du formulaire si des erreurs sont détectées
+									if (!isValid) {
+										return false;
+									}
+								}
+							</script>
 
-	
-						
+		
+							
 
-					</div>
+						</div>
 				</div>
 				<div class="col-lg-4">
 					<div class="contact-form-wrap">
