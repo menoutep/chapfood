@@ -39,9 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base',
     'accounts',
+    'livreurs',
     'bootstrap4',
+    'crispy_bootstrap4',
+    'crispy_forms',
 
 ]
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -131,7 +135,7 @@ MEDIA_URL = '/media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT=BASE_DIR/'media'
 #authentification
-LOGIN_REDIRECT_URL='base:meal_list'
+LOGIN_REDIRECT_URL='base:index'
 LOGIN_URL='accounts:login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

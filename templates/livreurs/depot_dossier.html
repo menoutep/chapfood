@@ -1,0 +1,13 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="contact-from-section mt-150 mb-150">
+   <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="Submit"/>
+    
+    </form> 
+</div>
+
+
+{% endblock %}
