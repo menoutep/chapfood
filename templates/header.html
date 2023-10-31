@@ -46,8 +46,10 @@
 										<li><a href="{% url 'accounts:signup' %}">S'enregistrer</a></li>
 										{% if user.is_authenticated %}
 											<li><a href="{% url 'accounts:logout' %}">Se déconnecter</a></li>
+											<li><a href="{% url 'accounts:password_reset' %}">Réinitialiser son mot de passe</a></li>
 										{% else %}
 											<li><a href="{% url 'accounts:login' %}">Se connecter</a></li>
+											<li><a href="{% url 'accounts:forget_password_reset' %}">Réinitialiser son mot de passe</a></li>
 										{% endif %}
 										
 									</ul>

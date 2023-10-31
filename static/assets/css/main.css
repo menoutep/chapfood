@@ -2264,12 +2264,33 @@ ul.social-link-team li a {
   line-height: 1.8;
 }
 
-.contact-form form p input[type=text], .contact-form form p input[type=tel], .contact-form form p input[type=email] {
+
+input:hover, textarea:hover {
+  border-color:#ffd900fa; /* Couleur de la bordure */
+  box-shadow: 0 0 5px #ffd900fa; /* Ombre au survol */
+}
+.contact-form form p input[type=text], .contact-form form p input[type=tel], .contact-form form p input[type=email], .contact-form form p input[type=date], .contact-form form p input[type=password] {
   width: 49%;
   padding: 15px;
   border: 1px solid #ddd;
   border-radius: 3px;
 }
+/* Sélectionne l'élément input de type "file" dans le champ d'assurance */
+
+
+/* Style au survol du bouton */
+
+
+/* Styles personnalisés pour les boutons de fichier */
+
+
+
+
+/* Styles personnalisés pour les boutons de fichier */
+
+
+
+
 
 .contact-form form p textarea {
   border: 1px solid #ddd;

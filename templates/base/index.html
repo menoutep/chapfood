@@ -24,10 +24,10 @@
 						<div class="product-image">
 							<a href="{% url 'base:meal_detail' meal.id %}"><img src="{{ meal.image.url|safe }}" alt=""></a>
 						</div>
-						<a href="{% url 'base:meal_detail' meal.id %}"><h3>{{ meal.name}}</h3></a>
-						<p class="product-price"><span>Temps de cuisson : {{ meal.preparation_time}}</span> {{ meal.price}}cfa</p>
+						<a href="{% url 'base:meal_detail' meal.id %}"><h3 id="name{{ meal.id }}">{{ meal.name}}</h3></a>
+						<span>Temps de cuisson : {{ meal.preparation_time}}</span> <p class="product-price" id="price{{ meal.id }}">{{ meal.price}}cfa</p>
                         
-						<a href="#" class="cart-btn" id="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+						<a href="#" class="cart-btn ted" id="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
 					</div>
 				</div>
 				<script>
