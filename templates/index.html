@@ -2,6 +2,7 @@
 {% load static %}
 <html lang="en">
 <head>
+{{ form.media }}
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,6 +10,7 @@
 
 	<!-- title -->
 	<title>Chapfood</title>
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
@@ -38,7 +40,8 @@
 	<link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
 	<!-- responsive -->
 	<link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
-
+	
+	
 </head>
 <body>
 	
@@ -107,4 +110,34 @@
 	<script src="{% static 'assets/js/main.js' %}"></script>
 
 </body>
+{% block js %}
+	<script type='text/javascript'>
+		console.log('juste pour tester');
+		if(localStorage.getItem('panier') == null){
+            var panier = {};
+        }else{
+            panier = JSON.parse(localStorage.getItem('panier'));
+        }
+		$(document).on('click', '.ted', function(){
+            console.log('ajouter');
+			var item_id = this.id.toString().substring(19);
+            
+			if(panier[item_id] != undefined){
+                quantite = panier[item_id][0] +1 ;
+                panier[item_id][0] = quantite;
+                panier[item_id][2] += parseFloat(document.getElementById("price"+item_id).innerHTML);
+            }else{
+                quantite = 1;
+                prix = parseFloat(document.getElementById("price"+item_id).innerHTML);
+                nom =  document.getElementById("name"+item_id).innerHTML;
+                panier[item_id] = [quantite, nom, prix ];
+                
+            }
+            console.log(panier);
+            localStorage.setItem('panier', JSON.stringify(panier));
+			
+			});
+			
+	</script>
+{% endblock  %}
 </html>

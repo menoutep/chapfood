@@ -32,8 +32,28 @@ class DossierLivreur(models.Model):
 class Livreur(User):
     #user = models.OneToOneField(User, on_delete=models.CASCADE)
     dossier = models.OneToOneField(DossierLivreur, on_delete=models.CASCADE)
-    commande = models.ForeignKey(Order,on_delete=models.SET_NULL, null=True)
     position = models.TextField()
 
     def __str__(self):
         return self.username 
+    
+
+STATUT_CHOICES = (
+    ('en_attente', 'En attente'),
+    ('en_cours', 'En cours'),
+    ('livree', 'Livrée'),
+    ('annulee', 'Annulée'),
+)
+   
+class Livraison(models.Model):
+    livreur = models.OneToOneField(Livreur, on_delete=models.CASCADE)
+    commande = models.OneToOneField(Order, on_delete=models.CASCADE)
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en_attente')
+
+    def __str__(self):
+        return f"Livraison {self.id} ({self.statut}) pour {self.livreur.nom} - Commande {self.commande.id}"
+
+
+
+
+

@@ -41,11 +41,14 @@ INSTALLED_APPS = [
     'accounts',
     'livreurs',
     'bootstrap4',
-    'crispy_bootstrap4',
     'crispy_forms',
-
+    "crispy_bootstrap5",
+    'rest_framework',
+    'api',
 ]
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CRISPY_TEMPLATE_PACK = 'bootstrap5'
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -144,3 +147,11 @@ EMAIL_PORT = 587  # Port SMTP pour TLS
 EMAIL_USE_TLS = True  # Utiliser TLS pour les connexions SMTP
 EMAIL_HOST_USER = 'jozacoder@gmail.com'  # Votre adresse e-mail Gmail
 EMAIL_HOST_PASSWORD = 'qsse pjsp jiyx bzaf'  # Mot de passe de votre compte Gmail
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+PASSWORD_RESET_SUBJECT = 'Réinitialisation de mot de passe - Mon site e-commerce'
+PASSWORD_RESET_MESSAGE = 'Cliquez sur le lien suivant pour réinitialiser votre mot de passe : {0}'

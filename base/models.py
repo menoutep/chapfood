@@ -28,8 +28,9 @@ class Meal(models.Model):
     
 
 class CartItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     meals = models.ManyToManyField(Meal, through='CartItemMeal')
+    last = models.BooleanField(null=False,default=False)
     total = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
 
     def calculate_total(self):
@@ -49,17 +50,22 @@ class CartItemMeal(models.Model):
     meal = models.ForeignKey('Meal', on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)  # Champ pour enregistrer la quantité de repas
     
-
     def calculate_item_total(self):
         # Calculez le prix total du repas en multipliant la quantité par le prix du repas
         return self.quantity * self.meal.price
-        
-
+    
     def __str__(self):
         return f"{self.quantity} x {self.meal.name}"
-    
+   
+STATUS_CHOICES = (
+        ('en_attente', 'En attente'),
+        ('en_cours', 'En cours de préparation'),
+        ('en_livraison', 'En cours de livraison'),
+        ('livree', 'Livrée'),
+        ('annulee', 'Annulée'),
+    )   
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     items = models.ManyToManyField(CartItemMeal)  # Les repas commandés
     order_total = models.DecimalField(max_digits=10, decimal_places=2)
     delivery_address = models.TextField()
@@ -67,19 +73,27 @@ class Order(models.Model):
     is_piece = models.BooleanField(default=False)
     monnaie = models.DecimalField(max_digits=15, decimal_places=2,blank=True,null=True)
     pickup_time = models.DateTimeField(default=timezone.now)
-    waiting = models.BooleanField(default=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_attente')
+    created_at = models.DateTimeField(auto_now_add=True)
+    time_cook = models.PositiveIntegerField(default=0)
 
+    
     def __str__(self):
+       
         return f"Commande de {self.user.username}"
-
+    
     def calculate_order_total(self):
         total = sum(item.calculate_item_total() for item in self.items.all())
         if self.is_delivery:
             total += 500  # Ajoutez 500 au montant total si le client souhaite être livré
         return total
+    
+        
+
+    
 
     # Ajoutez d'autres méthodes ou champs pour gérer l'état de la commande, la date de création, etc.
-
+    
 
 
 
