@@ -3,11 +3,12 @@
 # Create your views here.
 from django.shortcuts import render,redirect 
 from django.contrib.auth import authenticate, login
-
+from livreurs.models import Livreur
+from accounts.models import CustomUser
 from django.contrib.auth import logout
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView
-from .forms import UserCreationForm
+from .forms import UserCreationForm, UserLoginForm
 
 
 
@@ -37,20 +38,32 @@ def SignUpView(request):
 
 
 
-def login_view(request):
+
+def custom_login(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            # Rediriger l'utilisateur après une connexion réussie (par exemple, vers la page d'accueil)
-            return redirect('base:meal_list')
-        else:
-            # Authentification échouée, renvoyer un message d'erreur à l'utilisateur
-            return render(request, 'accounts/login.html', {'error_message': 'Nom d\'utilisateur ou mot de passe incorrect.'})
+        form = UserLoginForm(request.POST)
+        if form.is_valid():
+
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
+            print(username)
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                # Redirigez l'utilisateur après une connexion réussie
+                if Livreur.objects.filter(email=request.user.email).exists():
+                    return redirect("livreurs:index")
+                elif CustomUser.objects.filter(email=request.user.email).exists():
+                    # Rediriger l'utilisateur après une connexion réussie (par exemple, vers la page d'accueil)
+                    return redirect('base:meal_list')
+                else:
+                    return redirect('base:index')  # Remplacez 'page_d_accueil' par le nom de votre vue d'accueil
+
     else:
-        return render(request, 'accounts/login.html')
+        form = UserLoginForm()
+
+    context = {'form': form}
+    return render(request, 'accounts/login.html', context)
 
 def logout_view(request):
     logout(request)
