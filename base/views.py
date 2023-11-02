@@ -23,8 +23,12 @@ def customer_required(view_func):
 
 
 def index(request):
+    q= request.GET.get('q') if request.GET.get('q') != None else ''
+    meals=Meal.objects.filter(Q(name__icontains=q) |
+                              Q(category__name__icontains=q) | 
+                              Q(description__icontains=q))
     categories=Category.objects.all()
-    meals=Meal.objects.all()
+    
     
     cheapest_meal = Meal.objects.all().order_by('price').first()
     context={
@@ -35,8 +39,13 @@ def index(request):
     return render(request, 'base/index.html',context)
 
 def meal_list(request):
-    categories=Category.objects.all()
-    meals=Meal.objects.all()
+    q= request.GET.get('q') if request.GET.get('q') != None else ''
+    meals=Meal.objects.filter(Q(name__icontains=q) |
+                              Q(category__name__icontains=q) | 
+                              Q(description__icontains=q))
+    categories=Category.objects.filter(Q(name__icontains=q) | Q(description__icontains=q))
+    
+    
     cheapest_meal = Meal.objects.all().order_by('price').first()
     context={
         'categories':categories,

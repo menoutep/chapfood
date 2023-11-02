@@ -17,7 +17,7 @@ username_validator = UnicodeUsernameValidator()
 
 
 
-class DossierCreationForm(forms.Form):
+class DossierCreationForm(forms.ModelForm):
     nom = forms.CharField(
         label="Nom",
         widget=forms.TextInput(attrs={'class':'form-control','placeholder':'Entrez votre nom'})
@@ -138,7 +138,7 @@ class DossierCreationForm(forms.Form):
     class Meta:
         model = DossierLivreur
         fields='__all__' 
-        exclude=['is_valid']
+        exclude=['is_valid','refuser','created_at']
         
     def clean(self):
         cleaned_data = super().clean()
