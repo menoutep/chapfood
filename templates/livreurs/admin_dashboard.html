@@ -8,13 +8,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Chapfood~Livraison</title>
   <!-- plugins:css -->
-    
-   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-
-	 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-   <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
-
   <link rel="stylesheet" href="{% static 'vendors/feather/feather.css' %}">
   <link rel="stylesheet" href="{% static 'vendors/mdi/css/materialdesignicons.min.css' %}">
   <link rel="stylesheet" href="{% static 'vendors/ti-icons/css/themify-icons.css' %}">
@@ -443,86 +436,50 @@
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
-           
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Hoverable Table</h4>
+                  <h4 class="card-title">Commande en attente </h4>
                   <p class="card-description">
-                    Add class <code>.table-hover</code>
+                    Liste de toute les commande en attente de traitement
                   </p>
                   <div class="table-responsive">
-                      <table class="table">
+                    <table class="table">
                       <thead>
                         <tr>
-                          
+                          <th>Numero</th>
                           <th>montant</th>
                           <th>date de création</th>
-                          <th>position</th>
-                          <th>accepter</th>
+                          <th>livré</th>
+                          <th>valider</th>
                           <th>refuser</th>
                         </tr>
                       </thead>
                       <tbody>
                       {% for order in orders %}
                         <tr>
-                          
+                          <td>{{order.id}}</td>
                           <td>{{order.order_total}}</td>
                           <td>{{order.created_at}}</td>
-                          <td>{{order.delivery_address}}</td>
-                          <td>
-                            <button type="button" id="valider-livraison-{{ order.id }}" class="btn btn-success btn-rounded btn-fw">accepté</button>
-                            <button type="button" id="confirmer-livraison-{{ order.id }}" class="btn btn-warning btn-rounded btn-fw" style="display: none;">confirmer</button>
-
-                          </td>
-                          <td><button type="button" id="refuser-livraison-{{ order.id }}" class="btn btn-danger btn-rounded btn-fw">refusé</button></td>
-
+                          <td>{{order.is_delivery}}</td>
+                          <td><a href="#" id="valider-commande-{{ order.id }}"><label class="badge badge-danger">accepté</label></a></td>
+                          <td><label class="badge badge-danger">refusé</label></td>
                           
                         </tr>
                         <script>
-                               
-                                // Par exemple, ajouter un produit au panier en utilisant Fetc
-                                  document.getElementById('valider-livraison-{{ order.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    
-                                    const confirmerButton = document.getElementById('confirmer-livraison-{{ order.id }}');
+                                // JavaScript pour gérer les interactions avec le panier
+                                // Par exemple, ajouter un produit au panier en utilisant Fetch API
 
-                                    // Cacher le bouton "Accepté"
-                                    this.style.display = 'none';
-
-                                    // Afficher le bouton "Confirmer" après une minute
-                                    
-                                    confirmerButton.style.display = 'block';
-                                     // 60000 millisecondes équivalent à 1 minute
-                                  });
-
-                                  document.getElementById('confirmer-livraison-{{ order.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    const updateURL = `{% url 'livreurs:accepter-livraison' order.id %}`;
-                                    // Effectuer une requête AJAX pour confirmer la livraison
-                                    fetch(updateURL)
-                                      .then(response => {
-                                        const row = this.closest('tr');
-                                        row.remove();
-                                        //console.log(response.data["livraison"])
-                                                                                             // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                        })
-                                      .catch(error => {
-                                        console.error('Erreur lors de la confirmation du dossier :', error);
-                                      });
-                                  });
-
-
-                                  document.getElementById('refuser-livraison-{{ order.id }}').addEventListener('click', function (event) {
+                                document.getElementById('valider-commande-{{ order.id }}').addEventListener('click', function (event) {
                                     event.preventDefault();
                                     // Récupérer le produit à ajouter
                                     
-                                    const updateURL = `{% url 'livreurs:refuser-livraison' order.id %}`;
+                                    const updateURL = `{% url 'livreurs:accepter-commande' order.id %}`;
                                     // Effectuer une requête AJAX pour ajouter le produit au panier
                                     fetch(updateURL)
                                         .then(response => {
                                             const row = this.closest('tr'); // Trouvez l'élément tr parent
-											                      row.remove();
+											row.remove();
                                             // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
                                         })
                                         .catch(error => {
@@ -541,66 +498,234 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
+                  <h4 class="card-title">Hoverable Table</h4>
+                  <p class="card-description">
+                    Add class <code>.table-hover</code>
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+
+                          <th>dossiers</th>
+                          <th>Candidat</th>
+                          <th>Nom du candidat</th>
+                          <th>Date de création</th>
+                          <th>voir le dossier</th>
+                          <th>refuser le dossier</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      {% for dossier in dossiers %}
+                        <tr>
+                          <td class="py-1">
+                            <img src="{{dossier.photo_livreur.url}}" alt="image"/>
+                          </td>
+                          <td>{{dossier.id}}</td>
+                          <td>{{dossier.nom}}</td>
+                          <td>{{dossier.created_at}}</td>
+                          
+                          <td><a href="{% url 'livreurs:dossier-detail' dossier.id %}" ><button type="button" class="btn btn-info btn-rounded btn-fw">voir</button></a></td>
+                          <td><button type="button" href="#" id="refuser-dossier-{{ dossier.id }}" class="btn btn-danger btn-rounded btn-fw">supprimer</td>
+                          
+                        </tr>
+                          <script>
+                                // JavaScript pour gérer les interactions avec le panier
+                                // Par exemple, ajouter un produit au panier en utilisant Fetch API
+
+                                document.getElementById('refuser-dossier-{{ dossier.id }}').addEventListener('click', function (event) {
+                                    event.preventDefault();
+                                    // Récupérer le produit à ajouter
+                                   
+                                    const updateURL = `{% url 'livreurs:dossier-detail' dossier.id %}`;
+                                    // Effectuer une requête AJAX pour ajouter le produit au panier
+                                    fetch(updateURL)
+                                        .then(response => {
+                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                                        })
+                                        .catch(error => {
+                                            console.error('Erreur lors de la vaidation du dossier :', error);
+                                        });
+                                });
+
+				            </script>
+                      {% endfor %}
+                      </tbody>
+                  
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
                   <h4 class="card-title">Striped Table</h4>
                   <p class="card-description">
                     Add class <code>.table-striped</code>
                   </p>
-                  
-                    
-                  
-                    <div id="map" style="height:500px"></div>
-                  
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>
+                            User
+                          </th>
+                          <th>
+                            First name
+                          </th>
+                          <th>
+                            Progress
+                          </th>
+                          <th>
+                            Amount
+                          </th>
+                          <th>
+                            Deadline
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td class="py-1">
+                            <img src="{% static 'images/faces/face1.jpg' %}" alt="image"/>
+                          </td>
+                          <td>
+                            Herman Beck
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td>
+                            $ 77.99
+                          </td>
+                          <td>
+                            May 15, 2015
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">
+                            <img src="{% static 'images/faces/face2.jpg' %}" alt="image"/>
+                          </td>
+                          <td>
+                            Messsy Adam
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-danger" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td>
+                            $245.30
+                          </td>
+                          <td>
+                            July 1, 2015
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">
+                            <img src="{% static 'images/faces/face3.jpg' %}" alt="image"/>
+                          </td>
+                          <td>
+                            John Richards
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-warning" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td>
+                            $138.00
+                          </td>
+                          <td>
+                            Apr 12, 2015
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">
+                            <img src="{% static 'images/faces/face4.jpg' %}" alt="image"/>
+                          </td>
+                          <td>
+                            Peter Meggik
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td>
+                            $ 77.99
+                          </td>
+                          <td>
+                            May 15, 2015
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">
+                            <img src="{% static 'images/faces/face5.jpg' %}" alt="image"/>
+                          </td>
+                          <td>
+                            Edward
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-danger" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td>
+                            $ 160.25
+                          </td>
+                          <td>
+                            May 03, 2015
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">
+                            <img src="{% static 'images/faces/face6.jpg' %}" alt="image"/>
+                          </td>
+                          <td>
+                            John Doe
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-info" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td>
+                            $ 123.21
+                          </td>
+                          <td>
+                            April 05, 2015
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="py-1">
+                            <img src="{% static 'images/faces/face7.jpg' %}" alt="image"/>
+                          </td>
+                          <td>
+                            Henry Tom
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-warning" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                          <td>
+                            $ 150.00
+                          </td>
+                          <td>
+                            June 16, 2015
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
-            <script>
-            var userLat;
-            var userLng;
-                    var map = L.map('map').setView([5.217667827913414,-3.7607097752205902], 13);
-                      var deliveryMarker = L.marker([0, 0], { draggable: true }).addTo(map);
-                      // Obtenez la géolocalisation de l'utilisateur
-                      navigator.geolocation.getCurrentPosition(function(position) {
-                        var userLat = position.coords.latitude;
-                        var userLng = position.coords.longitude;
-                        // Placez un marqueur pour indiquer la position de l'utilisateur
-                        var userMarker = L.marker([userLat, userLng]).addTo(map);
-                        userMarker.bindPopup("Votre position").openPopup();
-                        map.setView([userLat, userLng], 13);  // Centrez la carte sur la position de l'utilisateur
-                        
-                          });
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19,
-                        attribution: 'OpenStreetMap'
-                      }).addTo(map);
-                       
-                    const updateURL = `{% url 'livreurs:detail-livraison'%}`;
-                    // Effectuer une requête AJAX pour confirmer la livraison
-                    fetch(updateURL)
-                      .then(response => response.json())
-												.then(data => {
-													console.log(data.livraison_position)
-                          var livraison_position=data.livraison_position.split(",")
-                          latitude_de_la_destination = livraison_position[0]
-                          longitude_de_la_destination = livraison_position[1]
-                          var destinationMarker = L.marker([latitude_de_la_destination,longitude_de_la_destination]).addTo(map);
-                          var ChapfoodMarker = L.marker([5.218594, -3.762943]).addTo(map);
-                          destinationMarker.bindPopup("Adresse de livraison").openPopup();
-                          ChapfoodMarker.bindPopup("Adresse de CHAPFOOD").openPopup();
-                          var control = L.Routing.control({
-                                  waypoints: [
-                                      L.latLng(userLat, userLng),
-                                      L.latLng(latitude_de_la_destination, longitude_de_la_destination)
-                                  ],
-                                  routeWhileDragging: true
-                              }).addTo(map);
 
-												})
-                      .catch(error => {
-                        console.error('Erreur lors de la confirmation du dossier :', error);
-                      });
-                                  
-                                // JavaScript pour gérer les interactions avec le panier
-            </script>
           </div>
         </div>
         <!-- content-wrapper ends -->
@@ -630,7 +755,6 @@
   <script src="{% static 'js/template.js' %}"></script>
   <script src="{% static 'js/settings.js' %}"></script>
   <script src="{% static 'js/todolist.js' %}"></script>
-
   <!-- endinject -->
   <!-- Custom js for this page-->
   <!-- End custom js for this page-->

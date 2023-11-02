@@ -52,7 +52,7 @@ def custom_login(request):
                 login(request, user)
                 # Redirigez l'utilisateur après une connexion réussie
                 if Livreur.objects.filter(email=request.user.email).exists():
-                    return redirect("livreurs:index")
+                    return redirect("livreurs:livreur-dashboard")
                 elif CustomUser.objects.filter(email=request.user.email).exists():
                     # Rediriger l'utilisateur après une connexion réussie (par exemple, vers la page d'accueil)
                     return redirect('base:meal_list')

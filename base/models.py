@@ -21,6 +21,7 @@ class Meal(models.Model):
     description = models.TextField()
     preparation_time = models.PositiveIntegerField(default=0, help_text="Temps de préparation en minutes")
     price = models.DecimalField(max_digits=15, decimal_places=2)
+    second_price = models.PositiveBigIntegerField(default=0)
     image = models.ImageField(upload_to='meal_images/')  # Champ pour l'image du repas
 
     def __str__(self):

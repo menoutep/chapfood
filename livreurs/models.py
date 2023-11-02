@@ -1,5 +1,6 @@
 from django.db import models
 from base.models import Order
+
 from accounts.models import CustomUser
 from django.contrib.auth.models import User,AbstractUser
 from django.utils import timezone
@@ -23,6 +24,8 @@ class DossierLivreur(models.Model):
     carte_grise_verso = models.ImageField(upload_to='dossier_livreurs/carte_grise/%Y/%m/%d')
     assurance = models.ImageField(upload_to='dossier_livreurs/assurance/%Y/%m/%d')
     is_valid = models.BooleanField(default=False, editable=False)
+    refuser = models.BooleanField(default=False, editable=False)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.nom
@@ -33,6 +36,7 @@ class Livreur(User):
     #user = models.OneToOneField(User, on_delete=models.CASCADE)
     dossier = models.OneToOneField(DossierLivreur, on_delete=models.CASCADE)
     position = models.TextField()
+    activity = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username 
@@ -47,11 +51,11 @@ STATUT_CHOICES = (
    
 class Livraison(models.Model):
     livreur = models.OneToOneField(Livreur, on_delete=models.CASCADE)
-    commande = models.OneToOneField(Order, on_delete=models.CASCADE)
-    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en_attente')
+    order = models.OneToOneField(Order, on_delete=models.CASCADE)
+    status = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en_attente')
 
     def __str__(self):
-        return f"Livraison {self.id} ({self.statut}) pour {self.livreur.nom} - Commande {self.commande.id}"
+        return f"Livraison {self.pk} ({self.status}) pour {self.livreur.dossier.nom} - Commande {self.order.pk}"
 
 
 
