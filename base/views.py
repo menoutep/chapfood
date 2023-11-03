@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Meal, CartItem, CartItemMeal,Category
+from .models import Meal, CartItem, CartItemMeal,Category,PromoCode
 from .forms import MealForm,ContactForm
 from django.contrib.auth.decorators import login_required
 from .forms import DeliveryForm
@@ -24,13 +24,18 @@ def customer_required(view_func):
 
 def index(request):
     q= request.GET.get('q') if request.GET.get('q') != None else ''
-    meals=Meal.objects.filter(Q(name__icontains=q) |
-                              Q(category__name__icontains=q) | 
-                              Q(description__icontains=q))
     categories=Category.objects.all()
+    for cat in categories:
+        cat.is_active()
+        print(cat.active)
+    
+    meals=Meal.objects.filter(Q(name__icontains=q) |
+                              Q(category__name__icontains=q) |          
+                              Q(description__icontains=q),category__active=True)
     
     
-    cheapest_meal = Meal.objects.all().order_by('price').first()
+    
+    cheapest_meal = meals.order_by('price').first()
     context={
         'categories':categories,
         'meals':meals,
@@ -39,14 +44,18 @@ def index(request):
     return render(request, 'base/index.html',context)
 
 def meal_list(request):
+    categories=Category.objects.all()
+    for cat in categories:
+        cat.is_active()
+        print(cat.active)
     q= request.GET.get('q') if request.GET.get('q') != None else ''
     meals=Meal.objects.filter(Q(name__icontains=q) |
                               Q(category__name__icontains=q) | 
-                              Q(description__icontains=q))
-    categories=Category.objects.filter(Q(name__icontains=q) | Q(description__icontains=q))
+                              Q(description__icontains=q),category__active=True)
+    categories=Category.objects.filter(Q(name__icontains=q) | Q(description__icontains=q),active=True)
     
     
-    cheapest_meal = Meal.objects.all().order_by('price').first()
+    cheapest_meal = meals.order_by('price').first()
     context={
         'categories':categories,
         'meals':meals,
@@ -136,11 +145,37 @@ def cart(request):
     customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
     # Récupérez le panier de l'utilisateur connecté
     cart, created = CartItem.objects.get_or_create(user=customer,last=True)
-    
-    # Calculer le prix total du panier en parcourant les repas dans le panier
-    total = sum(item.calculate_item_total() for item in cart.cartitemmeal_set.all())
+    total = cart.calculate_total()
+    code_promo= request.GET.get('code_promo')
+    print(code_promo)
+    if code_promo:
+        if isinstance(code_promo, str):
+            promo = PromoCode.objects.get(code=code_promo)
+            promo.is_active()
+            print(promo.active)
+            if promo and promo.active:
+                print(promo.discount_type)
+                if promo.discount_type=='percent':
+                    discount = (total * promo.discount_value)/100
+                    cart.total = total-discount
+                    cart.save()
+                    promo.active = False
+                    promo.save()
 
-    context = {'cart': cart, 'total': total}
+
+                elif promo.discount_type == 'amount':
+                    discount = promo.discount_value
+                    cart.total = total - discount
+                    cart.save()
+                    promo.active = False
+                    promo.save()
+    
+
+
+    # Calculer le prix total du panier en parcourant les repas dans le panier
+    
+
+    context = {'cart': cart, 'total': cart.total}
     
     return render(request, 'base/cart.html', context)
 
@@ -148,7 +183,8 @@ def cart(request):
 @customer_required
 def update_cart(request, meal_id,quantity):
     try:
-        cart_item_meal = CartItemMeal.objects.get(cart_item__user=request.user, meal__id=meal_id)
+        customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
+        cart_item_meal = CartItemMeal.objects.get(cart_item__user=customer, meal__id=meal_id,cart_item__last=True)
     except CartItemMeal.DoesNotExist:
         # Gérer le cas où le repas n'est pas dans le panier
         return redirect('base:cart')  # Rediriger vers le panier ou une autre vue appropriée 
