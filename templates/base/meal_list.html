@@ -39,7 +39,7 @@
 							<a href="{% url 'base:meal_detail' meal.id %}"><img src="{{ meal.image.url }}" alt=""></a>
 						</div>
 						<a href="{% url 'base:meal_detail' meal.id %}"><h3 id="name{{ meal.id }}">{{ meal.name}}</h3></a>
-						<span>Temps de cuisson : {{ meal.preparation_time}}</span> <p class="product-price" id="price{{ meal.id }}">{{ meal.price}}cfa</p>
+						<span>Temps de cuisson : {{ meal.preparation_time}}</span> <p class="product-price" id="price{{ meal.id }}">{{ meal.price}}cfa</p><p class="product-price2" id="price-barrer{{ meal.id }}">{{ meal.second_price}}cfa</p>
                         
 						<a href="#" class="cart-btn ted" id ="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
 					</div>
@@ -66,6 +66,25 @@
 									console.error('Erreur lors de l\'ajout au panier :', error);
 								});
 						});
+						var prix_normale= document.getElementById("price{{ meal.id }}");
+						var prix_barrer = document.getElementById("price-barrer{{ meal.id }}");
+						console.log(prix_barrer.textContent.split("c")[0]);
+						console.log(prix_normale.textContent.split("c")[0]);
+						prix_barrer.style.display = 'none';
+						var True= true, False = false;
+						var is_promo = {{meal.is_promo}};
+						console.log(is_promo);
+						
+						if(is_promo==true){
+							console.log(is_promo);
+							prix_barrer.style.display = "block";
+							var nouveauPrixBarré = document.createElement("del"); // Crée un élément "del" pour barrer le texte
+							
+							prix_normale.style.textDecoration = "line-through"; // Ajoute le prix barré à côté du prix normal
+							
+							// Supprime l'élément "price-barrer{{ meal.id }}"
+							//prix_barrer.parentNode.removeChild(prix_barrer);
+						}
     				</script>
 				    {% endfor %}
 			</div>

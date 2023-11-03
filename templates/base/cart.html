@@ -37,7 +37,11 @@
 									<td class="product-remove"><a href="#" id="remove-from-cart-{{ item.meal.id }}"><i class="far fa-window-close"></i></a></td>
 									<td class="product-image-cart"><img src="{{ item.meal.image.url }}" alt=""></td>
 									<td class="product-name">{{ item.meal.name }}</td>
+									{% if item.meal.is_promo%}
+									<td class="product-price">{{ item.meal.second_price }}cfa</td>
+									{% else %}
 									<td class="product-price">{{ item.meal.price }}cfa</td>
+									{% endif %}
 									<td class="product-quantity">								
 									<input class="rounded-input" type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity-input-{{ item.meal.id }}">									
 									</td>                      
@@ -129,7 +133,15 @@
 						</div>
 					</div>
 
-				
+				<div class="coupon-section">
+						<h3>Apply Coupon</h3>
+						<div class="coupon-form-wrap">
+							<form method="GET" action="{% url 'base:cart' %}">
+								<p><input name ="code_promo" type="text" placeholder="code promo"></p>
+								<p><input type="submit" value="Apply"></p>
+							</form>
+						</div>
+					</div>
 				</div>
 			</div>
 		</div>
