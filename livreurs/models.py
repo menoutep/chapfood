@@ -31,13 +31,42 @@ class DossierLivreur(models.Model):
         return self.nom
 
 
-
+STATUS_CHOICES = (
+    ('en_attente', 'En attente'),
+    ('en_livraison', 'En livraison'),
+)
 class Livreur(User):
     #user = models.OneToOneField(User, on_delete=models.CASCADE)
     dossier = models.OneToOneField(DossierLivreur, on_delete=models.CASCADE)
     position = models.TextField()
-    activity = models.BooleanField(default=False)
+    activity = models.BooleanField(default=False) #prend false si le livreur peux encore prendre un commande prend vrai si le livreur a atteint son max de commande permie
+    livraison_count = models.IntegerField(default=0)
+    status  = models.CharField(max_length=20, choices=STATUS_CHOICES, default='en_attente')
 
+    def is_active(self):
+        "Is the user active? Active means they can accpet one or many delivery."
+        
+        if self.status == 'en_attente': 
+            if self.livraison_count < 3:
+                self.activity = True
+                self.save()
+            else:
+                self.activity = False
+                self.save()
+        elif self.status == 'en_livraison':  
+            if self.livraison_count < 2:
+                self.activity = True
+                self.save()
+            else:
+                self.activity = False
+                self.save()
+        
+
+        return self.activity
+        
+
+
+    
     def __str__(self):
         return self.username 
     
@@ -50,7 +79,7 @@ STATUT_CHOICES = (
 )
    
 class Livraison(models.Model):
-    livreur = models.OneToOneField(Livreur, on_delete=models.CASCADE)
+    livreur = models.ForeignKey(Livreur, on_delete=models.CASCADE)
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUT_CHOICES, default='en_attente')
 

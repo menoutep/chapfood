@@ -113,18 +113,30 @@
 								</tr>
 							</thead>
 							<tbody>
+								{%if ancien_total%}
+									<tr class="total-data">
+										<td><strong>Ancien total: </strong></td>
+										<td>{{ancien_total}}cfa</td>
+									</tr>
+									<tr class="total-data">
+									<td><strong>Nouveau total: </strong></td>
+									<td id="sub_total_cart">{{total}}cfa</td>
+								</tr>
+								{% else %}
 								<tr class="total-data">
 									<td><strong>Subtotal: </strong></td>
 									<td id="sub_total_cart">{{total}}cfa</td>
 								</tr>
-								<tr class="total-data">
+								
+									<tr class="total-data">
 									<td><strong>TVA: </strong></td>
-									<td>0</td>
+									<td id="sub_total_cart">0</td>
 								</tr>
 								<tr class="total-data">
 									<td><strong>Total: </strong></td>
 									<td id="total_cart">{{total}}cfa</td>
 								</tr>
+								{% endif %}
 							</tbody>
 						</table>
 						<div class="cart-buttons">

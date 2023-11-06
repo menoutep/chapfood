@@ -447,7 +447,7 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">livraison disponible</h4>
+                  <h4 class="card-title">Hoverable Table</h4>
                   <p class="card-description">
                     Add class <code>.table-hover</code>
                   </p>
@@ -541,36 +541,21 @@
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Carte livraison</h4>
+                  <h4 class="card-title">Striped Table</h4>
                   <p class="card-description">
-                  <button type="button" id="start-livraison" class="btn btn-primary btn-rounded btn-fw">start livraisons</button>
-                    <script>
-                      document.getElementById('start-livraison').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    // Récupérer le produit à ajouter
-                                    
-                                    const updateURL = `{% url 'livreurs:start-livraison' %}`;
-                                    // Effectuer une requête AJAX pour ajouter le produit au panier
-                                    fetch(updateURL)
-                                        .then(response => {
-                                           history.go(0);
-                                        })
-                                        .catch(error => {
-                                            console.error('Erreur lors de la vaidation du dossier :', error);
-                                        });
-                                });
-                          //window.location.reload(true);
-                    </script>
+                    Add class <code>.table-striped</code>
                   </p>
+                  
                     
+                  
                     <div id="map" style="height:500px"></div>
                   
                 </div>
               </div>
             </div>
             <script>
-                    var userLat;
-                    var userLng;
+            var userLat;
+            var userLng;
                     var map = L.map('map').setView([5.217667827913414,-3.7607097752205902], 13);
                       var deliveryMarker = L.marker([0, 0], { draggable: true }).addTo(map);
                       // Obtenez la géolocalisation de l'utilisateur
@@ -617,80 +602,6 @@
                                   
                                 // JavaScript pour gérer les interactions avec le panier
             </script>
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Livraison en cours</h4>
-                  <p class="card-description">
-                    Add class <code>.table-striped</code>
-                  </p>
-                  <div class="table-responsive">
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th>
-                            client
-                          </th>
-                          <th>
-                            contact
-                          </th>
-                          <th>
-                            montant
-                          </th>
-                          <th>
-                            position
-                          </th>
-                          <th>
-                            terminer
-                          </th>
-                        </tr>
-                      </thead>
-                      {% for livraison in livraisons_en_cours%}
-                      <tbody>
-                        <tr>
-                          <td>
-                            {{livraison.order.user.username}}
-                          </td>
-                          <td>
-                            {{livraison.order.user.phone_number}}
-                          </td>
-                          <td>
-                            {{livraison.order.order_total}} cfa
-                          </td>
-                          <td>
-                            {{livraison.order.delivery_address}}
-                          </td>
-                          
-                          <td><button type="button" id="terminer-livraison-{{ livraison.id }}" class="btn btn-success btn-rounded btn-fw">terminer</button></td>
-
-                          
-                        </tr>
-                        <script>
-                          document.getElementById('terminer-livraison-{{ livraison.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    // Récupérer le produit à ajouter
-                                    
-                                    const updateURL = `{% url 'livreurs:end-livraison' livraison.id %}`;
-                                    // Effectuer une requête AJAX pour ajouter le produit au panier
-                                    fetch(updateURL)
-                                        .then(response => {
-                                            const row = this.closest('tr'); // Trouvez l'élément tr parent
-											                      row.remove();
-                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                        })
-                                        .catch(error => {
-                                            console.error('Erreur lors de la vaidation du dossier :', error);
-                                        });
-                                });
-                    </script>
-                      </tbody>
-                      {%endfor%}
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-                       
           </div>
         </div>
         <!-- content-wrapper ends -->

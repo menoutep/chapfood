@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.hashers import make_password
 # Create your views here.
 
-
+####################################utils#######################
 def livreur_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         # Vérifiez si l'utilisateur est authentifié et s'il est une instance de la classe Livreur.
@@ -21,6 +21,22 @@ def livreur_required(view_func):
 def is_superuser(user):
     return user.is_superuser
 
+def livreur_disponible(livreur):
+    """Retourne True si le livreur est disponible."""
+    if livreur.status == 'en_attente':
+        if livreur.livraison_count <=3:    
+            return True
+        else:    
+            return False
+    elif livreur.status == 'en_livraison':
+        if livreur.livraison_count <=2:
+            return True
+        else:
+            return False
+        
+
+####################################fin utils#######################
+######################################livreur view#########################
 def index(request):
     return render(request, 'livreurs/index.html')
 
@@ -46,20 +62,32 @@ def depot_dossier(request):
 
 @livreur_required
 def livreur_dashboard(request):
+    livreur = Livreur.objects.get(email=request.user.email,username=request.user.username)
+    livraisons_en_cours = Livraison.objects.filter(status="en_cours",livreur=livreur)
     orders = Order.objects.filter(status='en_cours',is_delivery=True)
-    print(orders)
-    context={"orders":orders}
+    print(livreur.livraison_count)
+    print(livreur.status)
+    print(livreur_disponible(livreur=livreur))
+    if livraisons_en_cours and len(livraisons_en_cours)>0:
+        context={"orders":orders,"livraisons_en_cours":livraisons_en_cours}
+    else :
+        context={"orders":orders}
     # Code de la vue accessible aux instances de la classe Livreur
     return render(request, 'livreurs/livreur_dashboard.html',context)
 
 
 
 @livreur_required
-def accepter_livraison(request,order_id):
+def accepter_livraison(request,order_id):  
+    print("pb") 
     livreur = Livreur.objects.get(email=request.user.email,username=request.user.username)
     order = Order.objects.get(id=order_id,status='en_cours',is_delivery=True)
-    if order:
-        if livreur.activity==False:
+    active = livreur_disponible(livreur=livreur)
+    print(active)
+    print("pb")
+    if order:       
+        if active:
+            print(livreur.is_active)
             order.status = "en_livraison"
             order.save()
             livraison = Livraison.objects.create(
@@ -67,56 +95,97 @@ def accepter_livraison(request,order_id):
                 status="en_attente",
                 livreur=livreur
             )
-            livraison.save()  
-            livreur.activity = True
+            livraison.save()
+
+            livreur.livraison_count = livreur.livraison_count + 1
+            print(livreur.livraison_count)
             livreur.save()
             orders = Order.objects.filter(status='en_cours')
             response_data = {"livraison_position":livraison.order.delivery_address,"livraison_status":livraison.status,"message":"livraison acceptée avec success"}
             return JsonResponse(response_data)
-    
+        else :
+            response_data = {"error":"error"}
+            print("nice my son")
+            return JsonResponse(response_data)
     else:
         response_data = {"error":"erreur d'acces ou erreur de validation"}
         return JsonResponse(response_data)
 @livreur_required
 def detail_livraison(request):
-    print(request.user.username)
+    #trouver un moyen de trier les livraison prise lorsque le livreur est en attente de celle lorsque le livreur est en course 
     livreur = Livreur.objects.get(email=request.user.email,username=request.user.username)
-    print(livreur.activity)
-    print(Livreur.objects.all())
-    livraison = Livraison.objects.filter(Q(status='en_attente',livreur=livreur) | Q(status='en_cours',livreur=livreur)).order_by('-id').last()
-    print(f'livraison: {livraison}')
-    response_data = {"livraison_position":livraison.order.delivery_address,"livraison_status":livraison.status,"message":"livraison acceptée avec success"}
-    return JsonResponse(response_data)
+    
+    livraisons = Livraison.objects.filter(Q(status='en_attente') | Q(status='en_cours'),livreur=livreur)
+    print(livraisons)
+    address_list = {}
+    
+    if livraisons :
+        for livraison in livraisons:
+            address_list[livraison.order.user.username]=livraison.order.delivery_address
+        response_data = {"address_list":address_list,"livraison_status":livraison.status,"message":"livraison acceptée avec success"}
+        return JsonResponse(response_data)
+    else: 
+        response_data = {"message":"vous n'avez pas de livraison en cours veuillez en selectionner une "}
+        return JsonResponse(response_data)
    
 @livreur_required
-def annuler_livraison(resquest,order_id):
+def annuler_livraison(request,order_id):
+    livreur = Livreur.objects.get(email=request.user.email,username=request.user.username)
     order = Order.objects.get(id=order_id,status='en_livraison',is_delivery=True)
     if order:
         order.status = "en_cours"
         order.save()
-        livraison = Livraison.objects.get(order=order)
+        livraison = Livraison.objects.get(order=order,livreur=livreur)
         livraison.delete()
+        livreur.livraison_count -=1
+        livreur.save()
         orders = Order.objects.filter(status='en_cours')
-        response_data = {"orders":orders,"message":"annulation effectuée avec succes"}
+        response_data = {"message":"annulation effectuée avec succes"}
         return JsonResponse(response_data)
     else:
         response_data = {"error":"erreur d'accès ou erreur de validation"}
         return JsonResponse(response_data)
 @livreur_required
-def start_livraison(order_id):
-    order = Order.objects.get(id=order_id,status='en_livraison',is_delivery=True)
-    livraison = Livraison.objects.get(order=order)
+def start_livraison(request):
+    livreur = Livreur.objects.get(email=request.user.email,username=request.user.username)
+  
+    livraisons = Livraison.objects.filter(status='en_attente',livreur=livreur)
+    if livraisons and len(livraisons)>0:
+        for livraison in livraisons:
+            if livraison:
+                livraison.status = "en_cours"
+                livraison.save()
+
+        livreur.status = "en_livraison"
+        livreur.save()
+        
+        response_data = {"message":"message_start"}
+        return JsonResponse(response_data)
+    else:
+        response_data = {"error":"erreur d'accés ou erreur de validation"}
+        return JsonResponse(response_data)
+    
+@livreur_required
+def end_livraison(request,livraison_id):
+    livreur = Livreur.objects.get(email=request.user.email,username=request.user.username)
+    livraison = Livraison.objects.get(id=livraison_id,livreur=livreur)
     if livraison:
-        livraison.status = "en_cours"
+        livraison.status = 'livree'
         livraison.save()
-        response_data = {"livraison":livraison}
+        livreur.livraison_count -=1
+        if livreur.livraison_count == 0:
+            livreur.status = 'en_attente'
+        livreur.save()
+        
+        response_data = {"message":"livraison terminer"}
         return JsonResponse(response_data)
     else:
         response_data = {"error":"erreur d'accés ou erreur de validation"}
         return JsonResponse(response_data)
 
+################################end livreur view#######################################
 
-
+################################################ADMIN#######################################################
 @user_passes_test(is_superuser)
 def valider_dossier_livreur(request, dossier_id):
     dossier = DossierLivreur.objects.get(id=dossier_id)
@@ -176,11 +245,11 @@ def accepter_commande(request,order_id):
         order.status = "en_cours"
         order.save()
         orders = Order.objects.filter(status='en_attente')
-        response_data = {"orders":orders,"message":"Commande acceptée"}
+        response_data = {"message":"Commande acceptée"}
         return JsonResponse(response_data)
     else:
         orders = Order.objects.filter(status='en_attente')
-        response_data = {"orders":orders,"message":"Erreur"}
+        response_data = {"message":"Erreur"}
         return JsonResponse(response_data)
 
 

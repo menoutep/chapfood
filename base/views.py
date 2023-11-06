@@ -148,7 +148,9 @@ def cart(request):
     total = cart.calculate_total()
     code_promo= request.GET.get('code_promo')
     print(code_promo)
+    ancien_total = 0
     if code_promo:
+        ancien_total = total
         if isinstance(code_promo, str):
             promo = PromoCode.objects.get(code=code_promo)
             promo.is_active()
@@ -175,7 +177,7 @@ def cart(request):
     # Calculer le prix total du panier en parcourant les repas dans le panier
     
 
-    context = {'cart': cart, 'total': cart.total}
+    context = {'cart': cart, 'total': cart.total,'ancien_total':ancien_total}
     
     return render(request, 'base/cart.html', context)
 
@@ -221,7 +223,7 @@ def remove_from_cart(request, meal_id):
 def checkout(request):
     customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
     # Récupérez le panier de l'utilisateur connecté
-    cart, created = CartItem.objects.get_or_create(user=customer,last=True)
+    cart = CartItem.objects.get(user=customer,last=True)
     time_cook = max(item.meal.preparation_time for item in cart.cartitemmeal_set.all())
     # Vérifiez si le formulaire de livraison a été soumis
     if request.method == 'POST':
