@@ -189,7 +189,7 @@
 					navigator.geolocation.getCurrentPosition(function(position) {
 						var userLat = position.coords.latitude;
 						var userLng = position.coords.longitude;
-
+						document.getElementById('id_delivery_address').value = userLat + ',' + userLng;
 						// Placez un marqueur pour indiquer la position de l'utilisateur
 						var userMarker = L.marker([userLat, userLng]).addTo(map);
 						userMarker.bindPopup("Votre position").openPopup();

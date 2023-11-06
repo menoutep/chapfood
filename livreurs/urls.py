@@ -14,6 +14,9 @@ urlpatterns = [
     path('accepter_livraison/<int:order_id>/', views.accepter_livraison, name='accepter-livraison'),
     path('refuser_livraison/<int:order_id>/', views.annuler_livraison, name='refuser-livraison'),
     path('detail_livraison/', views.detail_livraison, name='detail-livraison'),
+    path('start_livraison/', views.start_livraison, name='start-livraison'),
+    path('end_livraison/<int:livraison_id>/', views.end_livraison, name='end-livraison'),
+
 
 
 
