@@ -56,6 +56,11 @@ class DeliveryForm(forms.Form):
     def clean(self):
             cleaned_data = super().clean()
             pickup_time = cleaned_data.get('pickup_time')
+            delivery_adress= cleaned_data.get('delivery_address')
+            is_delivery = cleaned_data.get("is_delivery")
+            if is_delivery:
+                 if not delivery_adress or len(delivery_adress) < 3 :
+                      self.add_error('delivery_address', "Veuillez indiquez une adresse de livraison")
 
             if pickup_time is not None:
                 current_time = timezone.now().time()
