@@ -4,10 +4,13 @@ from .forms import MealForm,ContactForm
 from django.contrib.auth.decorators import login_required
 from .forms import DeliveryForm
 from .models import Order
+from api.serializers import OrderSerializer
 from accounts.models import CustomUser
 from django.core.mail import send_mail
 from django.http import HttpResponseForbidden
 from django.http import JsonResponse
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from django.db.models import Q
 # Create your views here.
 def customer_required(view_func):
@@ -250,12 +253,25 @@ def checkout(request):
                 is_piece=is_piece,
                 monnaie=monnaie,
                 time_cook=time_cook,
-                order_total=order_total  # Assignez le montant total calculé à la commande
+                order_total=order_total,       
             )
             
             # Ajoutez les repas du panier à la commande
             order.items.set(cart.cartitemmeal_set.all())
             order.save()  
+            serializer = OrderSerializer(order)
+            serialized_data = serializer.data
+            print(serialized_data)
+            
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "notifications_type1",
+                {
+                    "type": "send_notification_type1",
+                    "message": serialized_data
+                }
+            )
+            
             send_order_email(order)
             # Vider le panier
             #cart.cartitemmeal_set.all().delete()

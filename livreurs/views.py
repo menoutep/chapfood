@@ -1,10 +1,15 @@
+import json
 from django.shortcuts import get_object_or_404, render, redirect
+from django.core.serializers.json import DjangoJSONEncoder
+from api.serializers import OrderSerializer
 from .models import DossierLivreur,Livreur, Livraison
 from base.models import Order
 from .forms import DossierCreationForm
 from django.http import JsonResponse
 from django.http import HttpResponseForbidden
 from django.db.models import Q
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.hashers import make_password
 # Create your views here.
@@ -100,7 +105,18 @@ def accepter_livraison(request,order_id):
             livreur.livraison_count = livreur.livraison_count + 1
             print(livreur.livraison_count)
             livreur.save()
-            orders = Order.objects.filter(status='en_cours')
+
+            serializer = OrderSerializer(order)
+            serialized_data = serializer.data
+            print(serialized_data)
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "notifications_type3",  # Remplace avec le nom de ton groupe ou le chemin de l'URL approprié
+                    {
+                    "type": "send_notification_type3",
+                    "message": serialized_data  # Les données actualisées de la commande
+                    }
+            )
             response_data = {"livraison_position":livraison.order.delivery_address,"livraison_status":livraison.status,"message":"livraison acceptée avec success"}
             return JsonResponse(response_data)
         else :
@@ -146,15 +162,15 @@ def annuler_livraison(request,order_id):
         response_data = {"error":"erreur d'accès ou erreur de validation"}
         return JsonResponse(response_data)
 @livreur_required
-def start_livraison(request):
+def start_livraison(request,order_id):
+    order = Order.objects.get(id=order_id)
     livreur = Livreur.objects.get(email=request.user.email,username=request.user.username)
   
-    livraisons = Livraison.objects.filter(status='en_attente',livreur=livreur)
-    if livraisons and len(livraisons)>0:
-        for livraison in livraisons:
-            if livraison:
-                livraison.status = "en_cours"
-                livraison.save()
+    livraison = Livraison.objects.get(status='en_attente',livreur=livreur,order=order)
+    if livraison:
+        
+        livraison.status = "en_cours"
+        livraison.save()
 
         livreur.status = "en_livraison"
         livreur.save()
@@ -232,7 +248,7 @@ def admin_dashboard(request):
     dossiers = DossierLivreur.objects.filter(is_valid=False,refuser=False)
     orders = Order.objects.filter(status='en_attente')
     print(dossiers)
-    print(orders)
+    #print(orders)
     
     context = {'dossiers':dossiers,'orders':orders}
     return render(request, 'livreurs/admin_dashboard.html',context)
@@ -241,16 +257,40 @@ def admin_dashboard(request):
 def accepter_commande(request,order_id):
     
     order = Order.objects.get(id=order_id,status='en_attente')
+    print(order)
     if order:
         order.status = "en_cours"
         order.save()
-        orders = Order.objects.filter(status='en_attente')
+        
+        if order.is_delivery:
+            serializer = OrderSerializer(order)
+            serialized_data = serializer.data
+            print(serialized_data)
+            print('ok')
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                "notifications_type2",  # Remplace avec le nom de ton groupe ou le chemin de l'URL approprié
+                    {
+                    "type": "send_notification_type2",
+                    "message": serialized_data  # Les données actualisées de la commande
+                    }
+                )
+            
         response_data = {"message":"Commande acceptée"}
         return JsonResponse(response_data)
     else:
-        orders = Order.objects.filter(status='en_attente')
+        print("no")
         response_data = {"message":"Erreur"}
         return JsonResponse(response_data)
 
-
+def refuser_commande(request,order_id):
+    order = Order.objects.get(id=order_id,status='en_attente')
+    if order:
+        order.status = "annulee"
+        order.save()
+        response_data = {"message":"Commande Refusé"}
+        return JsonResponse(response_data)
+    else:
+        response_data = {"message":"Erreur"}
+        return JsonResponse(response_data)
    

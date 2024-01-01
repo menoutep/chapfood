@@ -43,7 +43,7 @@
 									<td class="product-price">{{ item.meal.price }}cfa</td>
 									{% endif %}
 									<td class="product-quantity">								
-									<input class="rounded-input" type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity-input-{{ item.meal.id }}">									
+									<input class="rounded-input ted" type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity-input-{{ item.meal.id }}">									
 									</td>                      
 									<td class="product-total" id="product_total-{{ item.meal.id }}">{{ item.calculate_item_total }}</td>
 									<script>
@@ -92,6 +92,22 @@
 												.catch(error => {
 													console.error('Erreur lors de l\'ajout au panier :', error);
 												});										
+										});
+
+										var panier = JSON.parse(localStorage.getItem('panier'));
+										$(document).on('click', '.ted', function(){
+										console.log('ajouter');
+										var item_id = this.id.toString().substring(15);
+										console.log("total"+item_id)
+										
+										if(panier[item_id] != undefined){
+											quantite = panier[item_id][0] +1 ;
+											panier[item_id][0] = quantite;
+											panier[item_id][2] += parseFloat(document.getElementById("price"+item_id).innerHTML);
+										}
+										console.log(panier);
+										//localStorage.setItem('panier', JSON.stringify(panier));
+										
 										});
 									</script>
 
