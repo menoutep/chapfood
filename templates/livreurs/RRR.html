@@ -1,0 +1,149 @@
+<script>
+    var audio = new Audio("{% static 'notifications/notif.awav' %}");
+    var livraisons = document.getElementById("livraisons-en-cours");
+    function removeLivraisonLocally(orderId) {
+        // Récupérez les commandes existantes du localStorage
+        var storedLivraisons = localStorage.getItem('livraisons');
+
+        if (storedLivraisons) {
+            // Convertissez les commandes stockées en tableau JavaScript
+            var livraisonsArray = JSON.parse(storedLivraisons);
+
+            // Recherchez l'ordre à supprimer
+            var indexToRemove = livraisonsArray.findIndex(order => order.id === orderId);
+
+            if (indexToRemove !== -1) {
+                // Supprimez l'ordre du tableau
+                livraisonsArray.splice(indexToRemove, 1);
+
+                // Mettez à jour le localStorage avec le nouveau tableau d'ordres
+                localStorage.setItem('livraisons', JSON.stringify(livraisonsArray));
+            }
+        }
+    }
+      function storeLivraisonLocally(order) {
+          // Récupérez les données stockées localement (s'il y en a déjà)
+          var storedLivraisons = localStorage.getItem("livraisons");
+
+          // Si aucune donnée n'est stockée localement, créez un tableau vide
+          var livraisonsArray = storedLivraisons ? JSON.parse(storedLivraisons) : [];
+
+          // Ajoutez la nouvelle commande au tableau
+          livraisonsArray.push(order);
+
+          // Stockez le tableau mis à jour localement
+          localStorage.setItem("livraisons", JSON.stringify(livraisonsArray));
+      }
+      function addLivraisonToTable(order) {
+        if(order.id >0){
+            var livraisonRow = document.createElement("tr");
+            livraisonRow.id = "livraison-row-" + order.id;
+            // Ajoutez des cellules <td> avec les données de la commande
+       
+            var cellClient = document.createElement("td");
+            cellClient.textContent = order.user.username;
+            livraisonRow.appendChild(cellClient);
+            var cellContact = document.createElement("td");
+            cellContact.textContent = order.user.phone_number;
+            livraisonRow.appendChild(cellContact);
+            var cellMontant = document.createElement("td");
+            cellMontant.textContent = order.order_total;
+            livraisonRow.appendChild(cellMontant);
+            var cellPosition = document.createElement("td");
+            cellPosition.textContent = order.delivery_address;
+            livraisonRow.appendChild(cellPosition);
+            
+            var cellAccept = document.createElement("td");
+            var acceptButton = document.createElement("button");
+            acceptButton.type = "button";
+            acceptButton.id = "start-livraison-" + order.id;
+            acceptButton.className = "btn btn-success btn-rounded btn-fw";
+            acceptButton.textContent = "accepté";
+            cellAccept.appendChild(acceptButton);
+            livraisonRow.appendChild(cellAccept);
+            
+
+            var cellRefuse = document.createElement("td");
+            var refuseButton = document.createElement("button");
+            refuseButton.type = "button";
+            refuseButton.id = "annulee-livraison-" + order.id;
+            refuseButton.className = "btn btn-danger btn-rounded btn-fw";
+            refuseButton.textContent = "refusé";
+            cellRefuse.appendChild(refuseButton)
+            livraisonRow.appendChild(cellRefuse);
+            livraisons.appendChild(livraisonRow);
+
+            
+        }
+        refuseButton.addEventListener('click', function(event) {
+                event.preventDefault();
+                 var updateURL = `{% url 'livreurs:annuler-livraison' 0 %}`;
+                updateURL = updateURL.replace("0",order.id)
+              // Effectuer une requête AJAX pour confirmer la livraison
+                  fetch(updateURL)
+                    .then(response => {
+                      removeLivraisonLocally(order.id);
+                      const row = this.closest('tr');
+                      row.remove();
+                      //console.log(response.data["livraison"])
+                                                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                    })
+                    .catch(error => {
+                      console.error('Erreur lors de la confirmation du dossier :', error);
+                    });
+            
+            
+        
+                
+            });
+        acceptButton.addEventListener('click', function(event) {
+            event.preventDefault();
+          
+            var updateURL = `{% url 'livreurs:start-livraison' 0 %}`;
+            updateURL = updateURL.replace("0",order.id)
+              // Effectuer une requête AJAX pour confirmer la livraison
+              fetch(updateURL)
+                .then(response => {
+                  removeLivraisonLocally(order.id);
+                  const row = this.closest('tr');
+                  row.remove();
+                  //console.log(response.data["livraison"])
+                                                                        // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                })
+                .catch(error => {
+                  console.error('Erreur lors de la confirmation du dossier :', error);
+                });
+        
+        
+        });
+      }
+
+      const websocketProtocol1 = window.location.protocol === "https:" ? "wss" : "ws";
+        const wsEndpoint1 = `${websocketProtocol1}://${window.location.host}/ws/notification_type3/`;
+        const socket1 = new WebSocket(wsEndpoint1);
+        var orders = document.getElementById("orders-en-cours")
+      // New event listener to capture incoming messages
+      socket.addEventListener("message", (event) => {
+        const orderData = JSON.parse(event.data);
+        const order = orderData.message;
+         console.log("Received notification:", order); // Log the received message to the console
+        console.log('Message received:', order.order_total);
+        if (audio) {
+        audio.play();
+        }
+        storeLivraisonLocally(order);
+        addLivraisonToTable(order);
+      });
+      document.addEventListener("DOMContentLoaded", function () {
+      var storedLivraisons = localStorage.getItem("livraisons");
+      if (storedLivraisons) {
+          var livraisonsArray = JSON.parse(storedLivraisons);
+
+          // Ajoutez chaque commande au tableau
+          livraisonsArray.forEach(function (order) {
+              addLivraisonToTable(order);
+          });
+      }
+    });
+       
+  </script> 

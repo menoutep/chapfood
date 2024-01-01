@@ -23,7 +23,7 @@
   <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" />
 </head>
 
-<body>
+<body allow="autoplay">
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
@@ -455,40 +455,11 @@
                           <th>refuser</th>
                         </tr>
                       </thead>
-                      <tbody>
-                      {% for order in orders %}
-                        <tr>
-                          <td>{{order.id}}</td>
-                          <td>{{order.order_total}}</td>
-                          <td>{{order.created_at}}</td>
-                          <td>{{order.is_delivery}}</td>
-                          <td><a href="#" id="valider-commande-{{ order.id }}"><label class="badge badge-danger">accepté</label></a></td>
-                          <td><label class="badge badge-danger">refusé</label></td>
-                          
-                        </tr>
-                        <script>
-                                // JavaScript pour gérer les interactions avec le panier
-                                // Par exemple, ajouter un produit au panier en utilisant Fetch API
-
-                                document.getElementById('valider-commande-{{ order.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    // Récupérer le produit à ajouter
-                                    
-                                    const updateURL = `{% url 'livreurs:accepter-commande' order.id %}`;
-                                    // Effectuer une requête AJAX pour ajouter le produit au panier
-                                    fetch(updateURL)
-                                        .then(response => {
-                                            const row = this.closest('tr'); // Trouvez l'élément tr parent
-											row.remove();
-                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                        })
-                                        .catch(error => {
-                                            console.error('Erreur lors de la vaidation du dossier :', error);
-                                        });
-                                });
-
-				            </script>
-                        {% endfor %}
+                      <tbody id="orders-en-cours">
+                      
+                      
+                       
+                        
                       </tbody>
                     </table>
                   </div>
@@ -725,7 +696,144 @@
                 </div>
               </div>
             </div>
+        <script>
+        function removeOrderLocally(orderId) {
+            // Récupérez les commandes existantes du localStorage
+            var storedOrders = localStorage.getItem('orders');
 
+            if (storedOrders) {
+                // Convertissez les commandes stockées en tableau JavaScript
+                var ordersArray = JSON.parse(storedOrders);
+
+                // Recherchez l'ordre à supprimer
+                var indexToRemove = ordersArray.findIndex(order => order.id === orderId);
+
+                if (indexToRemove !== -1) {
+                    // Supprimez l'ordre du tableau
+                    ordersArray.splice(indexToRemove, 1);
+
+                    // Mettez à jour le localStorage avec le nouveau tableau d'ordres
+                    localStorage.setItem('orders', JSON.stringify(ordersArray));
+                }
+            }
+        }
+          function storeOrderLocally(order) {
+              // Récupérez les données stockées localement (s'il y en a déjà)
+              var storedOrders = localStorage.getItem("orders");
+
+              // Si aucune donnée n'est stockée localement, créez un tableau vide
+              var ordersArray = storedOrders ? JSON.parse(storedOrders) : [];
+
+              // Ajoutez la nouvelle commande au tableau
+              ordersArray.push(order);
+
+              // Stockez le tableau mis à jour localement
+              localStorage.setItem("orders", JSON.stringify(ordersArray));
+          }
+          function addOrderToTable(order) {
+            if(order.id >0){
+                var orderRow = document.createElement("tr");
+                orderRow.id = "order-row-" + order.id;
+                // Ajoutez des cellules <td> avec les données de la commande
+           
+                var cellNumero = document.createElement("td");
+                cellNumero.textContent = order.id;
+                orderRow.appendChild(cellNumero);
+                var cellOrderTotal = document.createElement("td");
+                cellOrderTotal.textContent = order.order_total;
+                orderRow.appendChild(cellOrderTotal);
+                var cellCreation = document.createElement("td");
+                cellCreation.textContent = order.created_at;
+                orderRow.appendChild(cellCreation);
+                var cellLivre = document.createElement("td");
+                cellLivre.textContent = order.is_delivery;
+                orderRow.appendChild(cellLivre);
+                
+                var cellAccept = document.createElement("td");
+                var acceptButton = document.createElement("button");
+                acceptButton.type = "button";
+                acceptButton.id = "valider-livraison-" + order.id;
+                acceptButton.className = "btn btn-success btn-rounded btn-fw";
+                acceptButton.textContent = "accepté";
+
+                
+                
+                cellAccept.appendChild(acceptButton);
+                orderRow.appendChild(cellAccept);
+                
+
+                var cellRefuse = document.createElement("td");
+                var refuseButton = document.createElement("button");
+                refuseButton.type = "button";
+                refuseButton.id = "refuser-livraison-" + order.id;
+                refuseButton.className = "btn btn-danger btn-rounded btn-fw";
+                refuseButton.textContent = "refusé";
+                cellRefuse.appendChild(refuseButton)
+                orderRow.appendChild(cellRefuse);
+                orders.appendChild(orderRow);
+
+                
+            }
+            refuseButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    removeOrderLocally(order.id);
+                    const row = this.closest('tr');
+                    row.remove();
+                });
+            acceptButton.addEventListener('click', function(event) {
+                event.preventDefault();
+              
+                var updateURL = `{% url 'livreurs:accepter-commande' 0 %}`;
+                updateURL = updateURL.replace("0",order.id)
+                  // Effectuer une requête AJAX pour confirmer la livraison
+                  fetch(updateURL)
+                    .then(response => {
+                      removeOrderLocally(order.id);
+                      const row = this.closest('tr');
+                      row.remove();
+                      console.log(response.data)
+                                                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                      })
+                    .catch(error => {
+                      console.error('Erreur lors de la confirmation du dossier :', error);
+                    });
+              });
+
+              // Code pour gérer l'acceptation de la commande
+
+          }
+            
+          
+             const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+            const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification_type1/`;
+            const socket = new WebSocket(wsEndpoint);
+           
+            var orders = document.getElementById("orders-en-cours")
+          // New event listener to capture incoming messages
+          socket.addEventListener("message", (event) => {
+            console.log("Received raw data:", event.data);
+                const orderData = JSON.parse(event.data);
+                const order = orderData.message;
+                console.log("Received notification:", order); // Log the received message to the console
+                console.log('Message received:', order.order_total);
+                storeOrderLocally(order);
+                addOrderToTable(order);
+            });
+        document.addEventListener("DOMContentLoaded", function () {
+          var storedOrders = localStorage.getItem("orders");
+
+          if (storedOrders) {
+              var ordersArray = JSON.parse(storedOrders);
+
+              // Ajoutez chaque commande au tableau
+              ordersArray.forEach(function (order) {
+                  addOrderToTable(order);
+              });
+          }
+        });
+          
+
+        </script>
           </div>
         </div>
         <!-- content-wrapper ends -->

@@ -441,7 +441,17 @@ a.read-more-btn {
 a.read-more-btn:hover {
   color: #ffd900fa;
 }
-
+ul li a.shopping-cart .cart-basket {
+  font-size: .6rem;
+  position: absolute;
+  top: -1px;
+  right: 3px;
+  width: 15px;
+  height: 15px;
+  color: #fff;
+  background-color: #efd73a;
+  border-radius: 50%;
+}
 a.boxed-btn, a.bordered-btn, a.cart-btn {
   border-radius: 50px;
 }

@@ -12,17 +12,10 @@ urlpatterns = [
     path('dossier_detail/<int:dossier_id>/', views.dossier_detail, name='dossier-detail'),
     path('refuser_dossier/<int:dossier_id>/', views.refuser_dossier, name='refuser-dossier'),
     path('accepter_livraison/<int:order_id>/', views.accepter_livraison, name='accepter-livraison'),
-    path('refuser_livraison/<int:order_id>/', views.annuler_livraison, name='refuser-livraison'),
+    path('annule_livraison/<int:order_id>/', views.annuler_livraison, name='annuler-livraison'),
     path('detail_livraison/', views.detail_livraison, name='detail-livraison'),
-    path('start_livraison/', views.start_livraison, name='start-livraison'),
+    path('start_livraison/<int:order_id>/', views.start_livraison, name='start-livraison'),
     path('end_livraison/<int:livraison_id>/', views.end_livraison, name='end-livraison'),
 
-
-
-
-
-
-    #path('login/',views.login_view, name="login"),
-    #path('logout/', views.logout_view, name='logout')
-
 ]
+

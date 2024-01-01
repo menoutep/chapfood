@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,12 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'base',
     'accounts',
+    'rest_framework.authtoken',
     'livreurs',
     'bootstrap4',
     'crispy_forms',
-    "crispy_bootstrap5",
+    'crispy_bootstrap5',
     'rest_framework',
     'api',
+    'notifications',
+    
+    
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap5'
@@ -153,5 +158,14 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
-PASSWORD_RESET_SUBJECT = 'Réinitialisation de mot de passe - Mon site e-commerce'
+PASSWORD_RESET_SUBJECT = 'Réinitialisation de mot de passe - Chapfood.org'
 PASSWORD_RESET_MESSAGE = 'Cliquez sur le lien suivant pour réinitialiser votre mot de passe : {0}'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+ASGI_APPLICATION = "chapfood.asgi.application"
