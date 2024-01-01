@@ -57,7 +57,12 @@
 								</li>
 								<li>
 									<div class="header-icons">
-										<a class="shopping-cart" href="{% url 'base:cart' %}"><i class="fas fa-shopping-cart"></i></a>
+										<a class="shopping-cart position-relative d-inline-flex" href="{% url 'base:cart' %}">
+										<i class="fas fa fa-shopping-cart fa-lg"></i>
+										<span class="cart-basket d-flex align-items-center justify-content-center">
+											0
+										</span>
+										</a>
 										<a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
 									</div>
 								</li>
@@ -86,4 +91,21 @@
             }
         });
     });
+		if(localStorage.getItem('panier') == null){
+            var taille_panier = 0;
+			console.log("La taille du panier est : " + taille_panier);
+
+        }else{
+            panier = JSON.parse(localStorage.getItem('panier'));
+			let sommeQuantites = 0;
+
+			// Parcours des clés du dictionnaire (les items dans le panier)
+			for (let item in panier) {
+				// Ajout de la quantité de chaque item à la somme actuelle
+				sommeQuantites += panier[item][0]; // panier[item][0] représente la quantité
+			}
+
+			// Affichage de la somme des quantités
+			console.log("La somme des quantités dans le panier est : " + sommeQuantites);
+			}
 </script>

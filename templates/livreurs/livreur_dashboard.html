@@ -30,7 +30,7 @@
   <link rel="shortcut icon" href="{% static 'images/favicon.png' %}" />
 </head>
 
-<body>
+<body allow="autoplay">
   <div class="container-scroller">
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
@@ -463,75 +463,11 @@
                           <th>refuser</th>
                         </tr>
                       </thead>
-                      <tbody>
-                      {% for order in orders %}
-                        <tr>
-                          
-                          <td>{{order.order_total}}</td>
-                          <td>{{order.created_at}}</td>
-                          <td>{{order.delivery_address}}</td>
-                          <td>
-                            <button type="button" id="valider-livraison-{{ order.id }}" class="btn btn-success btn-rounded btn-fw">accepté</button>
-                            <button type="button" id="confirmer-livraison-{{ order.id }}" class="btn btn-warning btn-rounded btn-fw" style="display: none;">confirmer</button>
-
-                          </td>
-                          <td><button type="button" id="refuser-livraison-{{ order.id }}" class="btn btn-danger btn-rounded btn-fw">refusé</button></td>
-
-                          
-                        </tr>
-                        <script>
-                               
-                                // Par exemple, ajouter un produit au panier en utilisant Fetc
-                                  document.getElementById('valider-livraison-{{ order.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    
-                                    const confirmerButton = document.getElementById('confirmer-livraison-{{ order.id }}');
-
-                                    // Cacher le bouton "Accepté"
-                                    this.style.display = 'none';
-
-                                    // Afficher le bouton "Confirmer" après une minute
-                                    
-                                    confirmerButton.style.display = 'block';
-                                     // 60000 millisecondes équivalent à 1 minute
-                                  });
-
-                                  document.getElementById('confirmer-livraison-{{ order.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    const updateURL = `{% url 'livreurs:accepter-livraison' order.id %}`;
-                                    // Effectuer une requête AJAX pour confirmer la livraison
-                                    fetch(updateURL)
-                                      .then(response => {
-                                        const row = this.closest('tr');
-                                        row.remove();
-                                        //console.log(response.data["livraison"])
-                                                                                             // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                        })
-                                      .catch(error => {
-                                        console.error('Erreur lors de la confirmation du dossier :', error);
-                                      });
-                                  });
-
-
-                                  document.getElementById('refuser-livraison-{{ order.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    // Récupérer le produit à ajouter
-                                    
-                                    const updateURL = `{% url 'livreurs:refuser-livraison' order.id %}`;
-                                    // Effectuer une requête AJAX pour ajouter le produit au panier
-                                    fetch(updateURL)
-                                        .then(response => {
-                                            const row = this.closest('tr'); // Trouvez l'élément tr parent
-											                      row.remove();
-                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                        })
-                                        .catch(error => {
-                                            console.error('Erreur lors de la vaidation du dossier :', error);
-                                        });
-                                });
-
-				            </script>
-                        {% endfor %}
+                      <tbody id="orders-en-cours">
+                      
+                        
+                       
+                        
                       </tbody>
                     </table>
                   </div>
@@ -544,23 +480,7 @@
                   <h4 class="card-title">Carte livraison</h4>
                   <p class="card-description">
                   <button type="button" id="start-livraison" class="btn btn-primary btn-rounded btn-fw">start livraisons</button>
-                    <script>
-                      document.getElementById('start-livraison').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    // Récupérer le produit à ajouter
-                                    
-                                    const updateURL = `{% url 'livreurs:start-livraison' %}`;
-                                    // Effectuer une requête AJAX pour ajouter le produit au panier
-                                    fetch(updateURL)
-                                        .then(response => {
-                                           history.go(0);
-                                        })
-                                        .catch(error => {
-                                            console.error('Erreur lors de la vaidation du dossier :', error);
-                                        });
-                                });
-                          //window.location.reload(true);
-                    </script>
+                    
                   </p>
                     
                     <div id="map" style="height:500px"></div>
@@ -643,54 +563,322 @@
                           <th>
                             terminer
                           </th>
+                           <th>
+                            annulee
+                          </th>
                         </tr>
                       </thead>
-                      {% for livraison in livraisons_en_cours%}
-                      <tbody>
-                        <tr>
-                          <td>
-                            {{livraison.order.user.username}}
-                          </td>
-                          <td>
-                            {{livraison.order.user.phone_number}}
-                          </td>
-                          <td>
-                            {{livraison.order.order_total}} cfa
-                          </td>
-                          <td>
-                            {{livraison.order.delivery_address}}
-                          </td>
-                          
-                          <td><button type="button" id="terminer-livraison-{{ livraison.id }}" class="btn btn-success btn-rounded btn-fw">terminer</button></td>
-
-                          
-                        </tr>
-                        <script>
-                          document.getElementById('terminer-livraison-{{ livraison.id }}').addEventListener('click', function (event) {
-                                    event.preventDefault();
-                                    // Récupérer le produit à ajouter
-                                    
-                                    const updateURL = `{% url 'livreurs:end-livraison' livraison.id %}`;
-                                    // Effectuer une requête AJAX pour ajouter le produit au panier
-                                    fetch(updateURL)
-                                        .then(response => {
-                                            const row = this.closest('tr'); // Trouvez l'élément tr parent
-											                      row.remove();
-                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                        })
-                                        .catch(error => {
-                                            console.error('Erreur lors de la vaidation du dossier :', error);
-                                        });
-                                });
-                    </script>
+                      
+                      <tbody id="livraisons-en-cours">
+                      
+                        
                       </tbody>
-                      {%endfor%}
+                      
                     </table>
                   </div>
                 </div>
               </div>
             </div>
-                       
+      <script>
+        var audio = new Audio("{% static 'notifications/notif.awav' %}");
+        var orders = document.getElementById("orders-en-cours");
+        // Fonction pour retirer l'ordre du localStorage
+        function removeOrderLocally(orderId) {
+            // Récupérez les commandes existantes du localStorage
+            var storedOrders = localStorage.getItem('orders');
+
+            if (storedOrders) {
+                // Convertissez les commandes stockées en tableau JavaScript
+                var ordersArray = JSON.parse(storedOrders);
+
+                // Recherchez l'ordre à supprimer
+                var indexToRemove = ordersArray.findIndex(order => order.id === orderId);
+
+                if (indexToRemove !== -1) {
+                    // Supprimez l'ordre du tableau
+                    ordersArray.splice(indexToRemove, 1);
+
+                    // Mettez à jour le localStorage avec le nouveau tableau d'ordres
+                    localStorage.setItem('orders', JSON.stringify(ordersArray));
+                }
+            }
+        }
+          function storeOrderLocally(order) {
+              // Récupérez les données stockées localement (s'il y en a déjà)
+              var storedOrders = localStorage.getItem("orders");
+
+              // Si aucune donnée n'est stockée localement, créez un tableau vide
+              var ordersArray = storedOrders ? JSON.parse(storedOrders) : [];
+
+              // Ajoutez la nouvelle commande au tableau
+              ordersArray.push(order);
+
+              // Stockez le tableau mis à jour localement
+              localStorage.setItem("orders", JSON.stringify(ordersArray));
+          }
+            function addOrderToTable(order) {
+              if(order.id >0){
+                var orderRow = document.createElement("tr");
+                orderRow.id = "order-row-" + order.id;
+
+                // Ajoutez des cellules <td> avec les données de la commande
+                var cellOrderTotal = document.createElement("td");
+                cellOrderTotal.textContent = order.order_total;
+                orderRow.appendChild(cellOrderTotal);
+
+                var cellCreation = document.createElement("td");
+                cellCreation.textContent = order.created_at;
+                orderRow.appendChild(cellCreation);
+
+                var cellPosition = document.createElement("td");
+                cellPosition.textContent = order.delivery_address;
+                orderRow.appendChild(cellPosition);
+
+                var cellAccept = document.createElement("td");
+                var acceptButton = document.createElement("button");
+                acceptButton.type = "button";
+                acceptButton.id = "valider-livraison-" + order.id;
+                acceptButton.className = "btn btn-success btn-rounded btn-fw";
+                acceptButton.textContent = "accepté";
+
+                var confirmButton = document.createElement("button");
+                confirmButton.type = "button";
+                confirmButton.id = "confirmer-livraison-" + order.id;
+                confirmButton.className = "btn btn-warning btn-rounded btn-fw";
+                confirmButton.style.display = "none"; // Cachez le bouton initialement
+                confirmButton.textContent = "confirmer";
+                cellAccept.appendChild(confirmButton);
+                cellAccept.appendChild(acceptButton);
+                orderRow.appendChild(cellAccept);
+
+                var cellRefuse = document.createElement("td");
+                var refuseButton = document.createElement("button");
+                refuseButton.type = "button";
+                refuseButton.id = "refuser-livraison-" + order.id;
+                refuseButton.className = "btn btn-danger btn-rounded btn-fw";
+                refuseButton.textContent = "refusé";
+                cellRefuse.appendChild(refuseButton);
+                orderRow.appendChild(cellRefuse);
+
+                orders.appendChild(orderRow);
+
+                // Stockez les données localement
+                
+                refuseButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    removeOrderLocally(order.id);
+                    const row = this.closest('tr');
+                    row.remove();
+                });
+                acceptButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    this.style.display = 'none';
+                    confirmButton.style.display = 'block';
+
+                    // Code pour gérer l'acceptation de la commande
+                });
+
+                confirmButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    var updateURL = `{% url 'livreurs:accepter-livraison' 0 %}`;
+                    updateURL = updateURL.replace("0", order.id);
+
+                    // Effectuer une requête AJAX pour confirmer la livraison
+                    fetch(updateURL)
+                        .then(response => {
+                          removeOrderLocally(order.id);
+                            const row = this.closest('tr');
+                            row.remove();
+                            //console.log(response.data["livraison"])
+                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                        })
+                        .catch(error => {
+                            console.error('Erreur lors de la confirmation du dossier :', error);
+                        });
+                });
+                
+            }
+            }
+             const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+            const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification_type2/`;
+            const socket = new WebSocket(wsEndpoint);
+           
+            var orders = document.getElementById("orders-en-cours")
+          // New event listener to capture incoming messages
+          socket.addEventListener("message", (event) => {
+            const orderData = JSON.parse(event.data);
+            const order = orderData.message;
+             console.log("Received notification:", order); // Log the received message to the console
+            console.log('Message received:', order.order_total);
+            if (audio) {
+            audio.play();
+            }
+            storeOrderLocally(order);
+            addOrderToTable(order);
+          });
+        document.addEventListener("DOMContentLoaded", function () {
+          var storedOrders = localStorage.getItem("orders");
+          if (storedOrders) {
+              var ordersArray = JSON.parse(storedOrders);
+
+              // Ajoutez chaque commande au tableau
+              ordersArray.forEach(function (order) {
+                  addOrderToTable(order);
+              });
+          }
+        });
+
+      </script>
+
+      <script>
+        var audio = new Audio("{% static 'notifications/notif.awav' %}");
+        var livraisons = document.getElementById("livraisons-en-cours");
+        function removeLivraisonLocally(orderId) {
+            // Récupérez les commandes existantes du localStorage
+            var storedLivraisons = localStorage.getItem('livraisons');
+
+            if (storedLivraisons) {
+                // Convertissez les commandes stockées en tableau JavaScript
+                var livraisonsArray = JSON.parse(storedLivraisons);
+
+                // Recherchez l'ordre à supprimer
+                var indexToRemove = livraisonsArray.findIndex(order => order.id === orderId);
+
+                if (indexToRemove !== -1) {
+                    // Supprimez l'ordre du tableau
+                    livraisonsArray.splice(indexToRemove, 1);
+
+                    // Mettez à jour le localStorage avec le nouveau tableau d'ordres
+                    localStorage.setItem('livraisons', JSON.stringify(livraisonsArray));
+                }
+            }
+        }
+          function storeLivraisonLocally(order) {
+              // Récupérez les données stockées localement (s'il y en a déjà)
+              var storedLivraisons = localStorage.getItem("livraisons");
+
+              // Si aucune donnée n'est stockée localement, créez un tableau vide
+              var livraisonsArray = storedLivraisons ? JSON.parse(storedLivraisons) : [];
+
+              // Ajoutez la nouvelle commande au tableau
+              livraisonsArray.push(order);
+
+              // Stockez le tableau mis à jour localement
+              localStorage.setItem("livraisons", JSON.stringify(livraisonsArray));
+          }
+          function addLivraisonToTable(order) {
+            if(order.id >0){
+                var livraisonRow = document.createElement("tr");
+                livraisonRow.id = "livraison-row-" + order.id;
+                // Ajoutez des cellules <td> avec les données de la commande
+           
+                var cellClient = document.createElement("td");
+                cellClient.textContent = order.user.username;
+                livraisonRow.appendChild(cellClient);
+                var cellContact = document.createElement("td");
+                cellContact.textContent = order.user.phone_number;
+                livraisonRow.appendChild(cellContact);
+                var cellMontant = document.createElement("td");
+                cellMontant.textContent = order.order_total;
+                livraisonRow.appendChild(cellMontant);
+                var cellPosition = document.createElement("td");
+                cellPosition.textContent = order.delivery_address;
+                livraisonRow.appendChild(cellPosition);
+                
+                var cellAccept = document.createElement("td");
+                var acceptButton = document.createElement("button");
+                acceptButton.type = "button";
+                acceptButton.id = "start-livraison-" + order.id;
+                acceptButton.className = "btn btn-success btn-rounded btn-fw";
+                acceptButton.textContent = "accepté";
+                cellAccept.appendChild(acceptButton);
+                livraisonRow.appendChild(cellAccept);
+                
+
+                var cellRefuse = document.createElement("td");
+                var refuseButton = document.createElement("button");
+                refuseButton.type = "button";
+                refuseButton.id = "annulee-livraison-" + order.id;
+                refuseButton.className = "btn btn-danger btn-rounded btn-fw";
+                refuseButton.textContent = "refusé";
+                cellRefuse.appendChild(refuseButton)
+                livraisonRow.appendChild(cellRefuse);
+                livraisons.appendChild(livraisonRow);
+
+                
+            }
+            refuseButton.addEventListener('click', function(event) {
+                    event.preventDefault();
+                     var updateURL = `{% url 'livreurs:annuler-livraison' 0 %}`;
+                    updateURL = updateURL.replace("0",order.id)
+                  // Effectuer une requête AJAX pour confirmer la livraison
+                      fetch(updateURL)
+                        .then(response => {
+                          removeLivraisonLocally(order.id);
+                          const row = this.closest('tr');
+                          row.remove();
+                          //console.log(response.data["livraison"])
+                                                                                // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                        })
+                        .catch(error => {
+                          console.error('Erreur lors de la confirmation du dossier :', error);
+                        });
+                
+                
+            
+                    
+                });
+            acceptButton.addEventListener('click', function(event) {
+                event.preventDefault();
+              
+                var updateURL = `{% url 'livreurs:start-livraison' 0 %}`;
+                updateURL = updateURL.replace("0",order.id)
+                  // Effectuer une requête AJAX pour confirmer la livraison
+                  fetch(updateURL)
+                    .then(response => {
+                      removeLivraisonLocally(order.id);
+                      const row = this.closest('tr');
+                      row.remove();
+                      //console.log(response.data["livraison"])
+                                                                            // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+                    })
+                    .catch(error => {
+                      console.error('Erreur lors de la confirmation du dossier :', error);
+                    });
+            
+            
+            });
+          }
+
+          const websocketProtocol1 = window.location.protocol === "https:" ? "wss" : "ws";
+            const wsEndpoint1 = `${websocketProtocol1}://${window.location.host}/ws/notification_type3/`;
+            const socket1 = new WebSocket(wsEndpoint1);
+            var orders = document.getElementById("orders-en-cours")
+          // New event listener to capture incoming messages
+          socket.addEventListener("message", (event) => {
+            const orderData = JSON.parse(event.data);
+            const order = orderData.message;
+             console.log("Received notification:", order); // Log the received message to the console
+            console.log('Message received:', order.order_total);
+            if (audio) {
+            audio.play();
+            }
+            storeLivraisonLocally(order);
+            addLivraisonToTable(order);
+          });
+          document.addEventListener("DOMContentLoaded", function () {
+          var storedLivraisons = localStorage.getItem("livraisons");
+          if (storedLivraisons) {
+              var livraisonsArray = JSON.parse(storedLivraisons);
+
+              // Ajoutez chaque commande au tableau
+              livraisonsArray.forEach(function (order) {
+                  addLivraisonToTable(order);
+              });
+          }
+        });
+           
+      </script>         
           </div>
         </div>
         <!-- content-wrapper ends -->

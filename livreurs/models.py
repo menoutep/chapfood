@@ -29,7 +29,7 @@ class DossierLivreur(models.Model):
 
     def __str__(self):
         return self.nom
-
+ 
 
 STATUS_CHOICES = (
     ('en_attente', 'En attente'),
@@ -86,7 +86,12 @@ class Livraison(models.Model):
     def __str__(self):
         return f"Livraison {self.pk} ({self.status}) pour {self.livreur.dossier.nom} - Commande {self.order.pk}"
 
+class Notification(models.Model):
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.message
 
 
 
