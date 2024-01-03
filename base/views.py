@@ -13,6 +13,24 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models import Q
 # Create your views here.
+
+import json
+
+# Fonction pour envoyer le nombre d'éléments du panier
+def send_cart_item_count_to_clients(item_count):
+    # Récupère la couche de canal
+    channel_layer = get_channel_layer()
+
+    # Envoie le nombre d'éléments du panier aux clients connectés
+    async_to_sync(channel_layer.group_send)(
+        "notifications_type4",
+        {
+            "type": "send_notification_type4",
+            "message": item_count
+        }
+                
+    )
+
 def customer_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
         # Vérifiez si l'utilisateur est authentifié et s'il est une instance de la classe Livreur.
@@ -139,7 +157,7 @@ def add_to_cart(request, meal_id,quantity):
 
     # Calculer le total du panier
     cart.calculate_total()
-
+    send_cart_item_count_to_clients(cart.quantity_sum)
     # Rediriger l'utilisateur vers la liste des repas ou une autre vue appropriée
     return redirect('base:meal_list')
 
@@ -148,6 +166,7 @@ def cart(request):
     customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
     # Récupérez le panier de l'utilisateur connecté
     cart, created = CartItem.objects.get_or_create(user=customer,last=True)
+    send_cart_item_count_to_clients(cart.quantity_sum)
     total = cart.calculate_total()
     code_promo= request.GET.get('code_promo')
     print(code_promo)
@@ -174,12 +193,13 @@ def cart(request):
                     cart.save()
                     promo.active = False
                     promo.save()
+
     
 
 
     # Calculer le prix total du panier en parcourant les repas dans le panier
     
-
+    
     context = {'cart': cart, 'total': cart.total,'ancien_total':ancien_total}
     
     return render(request, 'base/cart.html', context)
@@ -200,6 +220,7 @@ def update_cart(request, meal_id,quantity):
         customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
         cart = CartItem.objects.get(user=customer,last=True)
         cart_total = cart.calculate_total()
+        send_cart_item_count_to_clients(cart.quantity_sum)
         response_data = {'message': 'Quantité mise à jour avec succès', 'new_quantity': cart_item_meal.quantity, 'item_total':cart_item_meal_total,'cart_total':cart_total}
     redirect('base:cart')
     return JsonResponse(response_data)
@@ -208,7 +229,7 @@ def update_cart(request, meal_id,quantity):
 def remove_from_cart(request, meal_id):
     customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
     try:
-        cart_item_meal = CartItemMeal.objects.get(cart_item__user=customer, meal__id=meal_id)
+        cart_item_meal = CartItemMeal.objects.get(cart_item__user=customer, meal__id=meal_id,cart_item__last=True)
         cart_item_meal.delete()
     except CartItemMeal.DoesNotExist:
         # Gérer le cas où le repas n'est pas dans le panier
@@ -216,6 +237,7 @@ def remove_from_cart(request, meal_id):
 
     cart = CartItem.objects.get(user=customer,last=True)
     cart_total = cart.calculate_total()
+    send_cart_item_count_to_clients(cart.quantity_sum)
     response_data = {'message': 'Quantité mise à jour avec succès','cart_total':cart_total}
     redirect('base:cart')
     
@@ -224,9 +246,12 @@ def remove_from_cart(request, meal_id):
 
 @customer_required
 def checkout(request):
+    
     customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
     # Récupérez le panier de l'utilisateur connecté
     cart = CartItem.objects.get(user=customer,last=True)
+    send_cart_item_count_to_clients(cart.quantity_sum)
+    print(f"quantity : {cart.quantity_sum}")
     time_cook = max(item.meal.preparation_time for item in cart.cartitemmeal_set.all())
     # Vérifiez si le formulaire de livraison a été soumis
     if request.method == 'POST':
@@ -281,7 +306,7 @@ def checkout(request):
             return redirect('base:order_success')
     else:
         form = DeliveryForm()
-
+    
     context = {'cart': cart, 'form': form,'order_total': cart.total}
     return render(request, 'base/checkout.html', context)
 
