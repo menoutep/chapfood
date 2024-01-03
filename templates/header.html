@@ -59,7 +59,7 @@
 									<div class="header-icons">
 										<a class="shopping-cart position-relative d-inline-flex" href="{% url 'base:cart' %}">
 										<i class="fas fa fa-shopping-cart fa-lg"></i>
-										<span class="cart-basket d-flex align-items-center justify-content-center">
+										<span class="cart-basket d-flex align-items-center justify-content-center" id="totalPanier">
 											0
 										</span>
 										</a>
@@ -91,21 +91,24 @@
             }
         });
     });
-		if(localStorage.getItem('panier') == null){
-            var taille_panier = 0;
-			console.log("La taille du panier est : " + taille_panier);
-
-        }else{
-            panier = JSON.parse(localStorage.getItem('panier'));
-			let sommeQuantites = 0;
-
-			// Parcours des clés du dictionnaire (les items dans le panier)
-			for (let item in panier) {
-				// Ajout de la quantité de chaque item à la somme actuelle
-				sommeQuantites += panier[item][0]; // panier[item][0] représente la quantité
-			}
-
-			// Affichage de la somme des quantités
-			console.log("La somme des quantités dans le panier est : " + sommeQuantites);
-			}
+		
+	const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+	const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification_type4/`;
+	const socket = new WebSocket(wsEndpoint);
+	
+	// Écoute des messages entrants
+document.addEventListener('DOMContentLoaded', (event) => {
+	socket.addEventListener("message", (event) => {
+		const data = JSON.parse(event.data);
+		if (data.type === "notification_type4") {
+			const itemCount = data.message;
+			// Utilise itemCount pour afficher la notification où tu le souhaites dans ta page web
+			// Par exemple :
+	
+			console.log("total article panier : "+itemCount)
+			document.getElementById('totalPanier').innerHTML=itemCount;  // Affichage de l'icone du nombre d'
+		}
+	});
+});
+	
 </script>

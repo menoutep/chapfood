@@ -79,3 +79,39 @@ class NotificationType3Consumer(AsyncWebsocketConsumer):
             "type": "notification_type3",
             "message": message
         }))
+
+class NotificationType4Consumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+        await self.channel_layer.group_add("notifications_type4", self.channel_name)
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard("notifications_type4", self.channel_name)
+
+    async def send_notification_type4(self, event):
+        message = event["message"]
+        print(f"Sending notification: {message}")
+        # Envoie la notification de type 3 au client
+        await self.send(text_data=json.dumps({
+            "type": "notification_type4",
+            "message": message
+        }))
+
+
+# Consumer pour gérer les mises à jour du panier côté client
+class CartUpdateConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        await self.accept()
+        await self.channel_layer.group_add("cart_updates", self.channel_name)
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard("cart_updates", self.channel_name)
+
+    async def update_cart_item_count(self, event):
+        item_count = event["item_count"]
+
+        # Envoie le nombre d'éléments du panier aux clients WebSocket connectés
+        await self.send(text_data=json.dumps({
+            "type": "cart_item_count",
+            "item_count": item_count
+        }))

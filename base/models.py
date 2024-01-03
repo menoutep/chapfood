@@ -72,6 +72,11 @@ class CartItem(models.Model):
         self.total = total
         self.save()
         return self.total
+    @property
+    def quantity_sum(self):
+        """Retourne la somme des quantités d'articles dans ce panier"""
+        qty_sum = sum([i.quantity for i in self.cartitemmeal_set.all()])
+        return qty_sum
 
     def __str__(self):
         return f"Panier de {self.user.username}"
