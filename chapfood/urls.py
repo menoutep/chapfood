@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
-from notifications.consumers import NotificationType1Consumer,NotificationType2Consumer,NotificationType3Consumer
+from notifications.consumers import NotificationType1Consumer,NotificationType2Consumer,NotificationType3Consumer,NotificationType4Consumer,CartUpdateConsumer
 urlpatterns = [
     path("", include("base.urls")),
     path("accounts/", include("accounts.urls")),
@@ -32,6 +32,8 @@ websocket_urlpatterns = [
     path("ws/notification_type1/", NotificationType1Consumer.as_asgi()),
     path("ws/notification_type2/", NotificationType2Consumer.as_asgi()),
     path("ws/notification_type3/", NotificationType3Consumer.as_asgi()),
+    path("ws/notification_type4/", NotificationType4Consumer.as_asgi()),
+    path("ws/cart_item_count/", CartUpdateConsumer.as_asgi()),
  
 
 ]
