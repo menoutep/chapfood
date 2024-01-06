@@ -167,7 +167,6 @@
         });
             
     </script>
-        
 	<!-- end header -->
 	
 	<!-- search area -->
@@ -193,178 +192,131 @@
 
 
 
-		<!-- cart -->
-<div class="breadcrumb-section breadcrumb-bg">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 offset-lg-2 text-center">
-                <div class="breadcrumb-text">
-                    <p>Solution Innovante</p>
-                    <h1>Panier</h1>
+	{% include "slider.html" %}
+	<!-- product section -->
+	<div class="product-section mt-150 mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 text-center">
+					<div class="section-title">	
+						<h3><span class="orange-text">Nos</span> Produits</h3>
+						<p>Que vous soyez un amateur de saveurs exotiques, un adepte de la cuisine traditionnelle ou à la recherche d'options saines et équilibrées, nous avons quelque chose de spécial pour chacun d'entre vous. Chaque plat est préparé avec des ingrédients frais et de qualité supérieure, pour garantir que chaque bouchée soit un véritable régal pour vos papilles.</p>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+                    {% for meal in meals %}
+				<div class="col-lg-4 col-md-6 text-center">
+					<div class="single-product-item">
+						<div class="product-image">
+							<a href="{% url 'base:meal_detail' meal.id %}"><img src="{{ meal.image.url|safe }}" alt=""></a>
+						</div>
+						<a href="{% url 'base:meal_detail' meal.id %}"><h3 id="name{{ meal.id }}">{{ meal.name}}</h3></a>
+						<span>Temps de cuisson : {{ meal.preparation_time}}</span> <p class="product-price" id="price{{ meal.id }}">{{ meal.price}}cfa</p>
+                        
+						<a href="#" class="cart-btn ted" id="add-to-cart-button-{{ meal.id }}"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
+					</div>
+				</div>
+				<script>
+					// JavaScript pour gérer les interactions avec le panier
+					// Par exemple, ajouter un produit au panier en utilisant Fetch API
+
+					document.getElementById('add-to-cart-button-{{ meal.id }}').addEventListener('click', function (event) {
+						event.preventDefault();
+						// Récupérer le produit à ajouter
+						const productID = {{meal.id}}; // ID du produit
+						const quantity = 1;
+						const updateURL = `{% url 'base:add_to_cart' meal.id 0 %}`;
+						// Effectuer une requête AJAX pour ajouter le produit au panier
+						fetch(updateURL)
+							.then(response => {
+								// Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
+							})
+							.catch(error => {
+								console.error('Erreur lors de l\'ajout au panier :', error);
+							});
+					});
+
+				</script>
+				    {% endfor %}
+			</div>
+		</div>
+	</div>
+	<!-- end product section -->
+
+	<!-- cart banner section -->
+	<section class="cart-banner pt-100 pb-100">
+    	<div class="container">
+        	<div class="row clearfix">
+            	<!--Image Column-->
+            	<div class="image-column col-lg-6">
+                	<div class="image">
+                    	<div class="price-box">
+                        	<div class="inner-price">
+                                <span class="price">
+                                    <strong>30%</strong> <br> de réduction
+                                </span>
+                            </div>
+                        </div>
+                    	<img src="{% static 'assets/img/a.jpg'%}" alt="">
+                    </div>
+                </div>
+                <!--Content Column-->
+                <div class="content-column col-lg-6">
+					<h3><span class="orange-text">Affaire</span> du mois</h3>
+                    <h4>{{cheapest_meal.name}}</h4>
+                    <div class="text">{{cheapest_meal.description}}</div>
+                    <!--Countdown Timer-->
+                    <div class="time-counter"><div class="time-countdown clearfix" data-countdown="2020/2/01"><div class="counter-column"><div class="inner"><span class="count">00</span>Days</div></div> <div class="counter-column"><div class="inner"><span class="count">00</span>Hours</div></div>  <div class="counter-column"><div class="inner"><span class="count">00</span>Mins</div></div>  <div class="counter-column"><div class="inner"><span class="count">00</span>Secs</div></div></div></div>
+                	<a href="{% url 'base:add_to_cart' cheapest_meal.id 1 %}" class="cart-btn mt-3"><i class="fas fa-shopping-cart"></i> Add to Cart</a>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="cart-section mt-50 mb-150">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 col-md-12">
-                <div class="cart-table-wrap">
-                    <table class="cart-table">
-                        <thead class="cart-table-head">
-                            <tr class="table-head-row">
-                                <th class="product-remove"></th>
-                                <th class="product-image-cart">Product Image</th>
-                                <th class="product-name">Name</th>
-                                <th class="product-price">Price</th>
-                                <th class="product-quantity">Quantity</th>
-                                <th class="product-total">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-              {% for item in cart.cartitemmeal_set.all %}
-                            <tr class="table-body-row">
-                                <td class="product-remove"><a href="#" id="remove-from-cart-{{ item.meal.id }}"><i class="far fa-window-close"></i></a></td>
-                                <td class="product-image-cart"><img src="{{ item.meal.image.url }}" alt=""></td>
-                                <td class="product-name">{{ item.meal.name }}</td>
-                                {% if item.meal.is_promo%}
-                                <td class="product-price">{{ item.meal.second_price }}cfa</td>
-                                {% else %}
-                                <td class="product-price">{{ item.meal.price }}cfa</td>
-                                {% endif %}
-                                <td class="product-quantity">								
-                                <input class="rounded-input ted" type="number" name="quantity" value="{{ item.quantity }}" min="1" id="quantity-input-{{ item.meal.id }}">									
-                                </td>                      
-                                <td class="product-total" id="product_total-{{ item.meal.id }}">{{ item.calculate_item_total }}</td>
-                                <script>
-                                    // Sélectionnez l'élément d'entrée de quantité et le formulaire
-                                    //const quantityInput = document.getElementById("quantity-input-{{ item.meal.id }}");
-                                    //const cartUpdateForm = document.getElementById("cart-update-form-{{ item.meal.id }}");
-                                    
-                                    var newQuantity = 0;
-                                    // Écoutez l'événement de modification de la quantité
-                                    document.getElementById("quantity-input-{{ item.meal.id }}").addEventListener("change", function (event) {
-                                        event.preventDefault();
-                                        newQuantity = document.getElementById("quantity-input-{{ item.meal.id }}").value;
-                                        const updateURL = `{% url 'base:update_cart' item.meal.id 0 %}`.replace('0', newQuantity);
-                                        // Soumettez le formulaire lorsque la quantité est modifiée
-                                        fetch(updateURL)
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                                
-                                                document.getElementById("product_total-{{ item.meal.id }}").textContent = data.item_total;
-                                                document.getElementById("total_cart").textContent = data.cart_total;
-                                                document.getElementById("sub_total_cart").textContent = data.cart_total;
+    </section>
+    <!-- end cart banner section -->
 
-                                            })
-                                            .catch(error => {
-                                                console.error('Erreur lors de l\'ajout au panier :', error);
-                                            });
-                                    });
-                                    document.getElementById('remove-from-cart-{{ item.meal.id }}').addEventListener('click', function (event) {
-                                        event.preventDefault();
-                                        // Récupérer le produit à ajouter
-                                        //const productID = {{meal.id}}; // ID du produit
-
-                                        // Effectuer une requête AJAX pour ajouter le produit au panier
-                                        fetch(`{% url 'base:remove_from_cart' item.meal.id %}`)
-                                            .then(response => response.json())
-                                            .then(data => {
-                                                // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
-                                                
-                                                //document.getElementById("product_total-{{ item.meal.id }}").textContent = data.item_total;
-                                                document.getElementById("total_cart").textContent = data.cart_total;
-                                                document.getElementById("sub_total_cart").textContent = data.cart_total;
-                                                const row = this.closest('tr'); // Trouvez l'élément tr parent
-                                                row.remove(); // Supprimez la ligne du panier du DOM
-                                            })
-                                            .catch(error => {
-                                                console.error('Erreur lors de l\'ajout au panier :', error);
-                                            });										
-                                    });
-
-                                    var panier = JSON.parse(localStorage.getItem('panier'));
-                                    $(document).on('click', '.ted', function(){
-                                    console.log('ajouter');
-                                    var item_id = this.id.toString().substring(15);
-                                    console.log("total"+item_id)
-                                    
-                                    if(panier[item_id] != undefined){
-                                        quantite = panier[item_id][0] +1 ;
-                                        panier[item_id][0] = quantite;
-                                        panier[item_id][2] += parseFloat(document.getElementById("price"+item_id).innerHTML);
-                                    }
-                                    console.log(panier);
-                                    //localStorage.setItem('panier', JSON.stringify(panier));
-                                    
-                                    });
-                                </script>
-
-                            </tr>
-            {%endfor%}
-    
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <div class="total-section">
-                    <table class="total-table">
-                        <thead class="total-table-head">
-                            <tr class="table-total-row">
-                                <th>Total</th>
-                                <th>Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {%if ancien_total%}
-                                <tr class="total-data">
-                                    <td><strong>Ancien total: </strong></td>
-                                    <td>{{ancien_total}}cfa</td>
-                                </tr>
-                                <tr class="total-data">
-                                <td><strong>Nouveau total: </strong></td>
-                                <td id="sub_total_cart">{{total}}cfa</td>
-                            </tr>
-                            {% else %}
-                            <tr class="total-data">
-                                <td><strong>Subtotal: </strong></td>
-                                <td id="sub_total_cart">{{total}}cfa</td>
-                            </tr>
-                            
-                                <tr class="total-data">
-                                <td><strong>TVA: </strong></td>
-                                <td id="sub_total_cart">0</td>
-                            </tr>
-                            <tr class="total-data">
-                                <td><strong>Total: </strong></td>
-                                <td id="total_cart">{{total}}cfa</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                    <div class="cart-buttons">
-                    
-                        <a href="{% url 'base:checkout' %}" class="boxed-btn black">Check Out</a>
-                    </div>
-                </div>
-
-            <div class="coupon-section">
-                    <h3>Apply Coupon</h3>
-                    <div class="coupon-form-wrap">
-                        <form method="GET" action="{% url 'base:cart' %}">
-                            <p><input name ="code_promo" type="text" placeholder="code promo"></p>
-                            <p><input type="submit" value="Apply"></p>
-                        </form>
-                    </div>
-                </div>
-            </div>
+	
+	
+	<!-- advertisement section -->
+	<div class="abt-section mb-150">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-6 col-md-12">
+					<div class="abt-bg">
+						<a href="https://www.youtube.com/watch?v=DBLlFWYcIGQ" class="video-play-btn popup-youtube"><i class="fas fa-play"></i></a>
+					</div>
+				</div>
+				<div class="col-lg-6 col-md-12">
+					<div class="abt-text">
+						<p class="top-sub">Since Year 1999</p>
+						<h2>Nous sommes <span class="orange-text">Chapfood</span></h2>
+						<p>Notre menu évolue constamment pour refléter les saisons et les dernières tendances gastronomiques. Nous sommes fiers de vous offrir des repas qui vous permettent de vous évader du quotidien, de partager des moments précieux en famille et entre amis, ou tout simplement de savourer un repas rapide et délicieux.</p>
+						<p>Explorez notre gamme de plats alléchants, des entrées aux desserts, et découvrez votre nouveau coup de cœur culinaire. Que vous choisissiez de déguster nos repas chez vous, au bureau ou lors d'un événement spécial, nous sommes là pour vous offrir une expérience gastronomique exceptionnelle à chaque occasion.</p>
+						<a href="#" class="boxed-btn mt-4">know more</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end advertisement section -->
+	
+	<!-- shop banner -->
+	<section class="shop-banner">
+    	<div class="container">
+        	<h3>Découvrez nos promotions! <br> Avec la grande <span class="orange-text">Promotion...</span></h3>
+            <div class="sale-percent"><span>Reduction! <br> Jusqu'a</span>50% <span>off</span></div>
+            <a href="{% url 'base:meal_list' %}" class="cart-btn btn-lg">Shop Now</a>
         </div>
-    </div>
-</div>
+    </section>
+	<!-- end shop banner -->
+
+	<!-- latest news -->
+	
+	<!-- end latest news -->
+
+	<!-- logo carousel -->
+
 
  
 	<!-- end logo carousel -->
