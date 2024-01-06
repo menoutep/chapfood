@@ -42,7 +42,7 @@ def customer_required(view_func):
 
 
 
-
+@login_required
 def index(request):
     q= request.GET.get('q') if request.GET.get('q') != None else ''
     categories=Category.objects.all()
@@ -57,13 +57,29 @@ def index(request):
     
     
     cheapest_meal = meals.order_by('price').first()
-    context={
-        'categories':categories,
-        'meals':meals,
-        'cheapest_meal':cheapest_meal
-    }
-    return render(request, 'base/index.html',context)
+    
+    if CustomUser.objects.filter(username=request.user.username).exists() and CartItem.objects.filter(user__username=request.user.username,last=True).exists() :
+        customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
+        cart = CartItem.objects.get(user=customer,last=True)
+        quantite_panier = cart.quantity_sum
 
+        context={
+            'categories':categories,
+            'meals':meals,
+            'cheapest_meal':cheapest_meal,
+            'quantite_panier':quantite_panier
+        }
+        return render(request, 'base/index_.html',context)
+    else :
+        context={
+            'categories':categories,
+            'meals':meals,
+            'cheapest_meal':cheapest_meal,
+            
+        }
+        return render(request, 'base/index.html',context)
+
+@login_required
 def meal_list(request):
     categories=Category.objects.all()
     for cat in categories:
@@ -74,17 +90,29 @@ def meal_list(request):
                               Q(category__name__icontains=q) | 
                               Q(description__icontains=q),category__active=True)
     categories=Category.objects.filter(Q(name__icontains=q) | Q(description__icontains=q),active=True)
-    
-    
+
     cheapest_meal = meals.order_by('price').first()
-    context={
+
+    if CustomUser.objects.filter(username=request.user.username).exists() and CartItem.objects.filter(user__username=request.user.username,last=True).exists() :
+        customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
+        cart = CartItem.objects.get(user=customer,last=True)
+        quantite_panier = cart.quantity_sum
+        context={
         'categories':categories,
         'meals':meals,
-        'cheapest_meal':cheapest_meal
-    }
-    return render(request, 'base/meal_list.html',context)
+        'cheapest_meal':cheapest_meal,
+        'quantite_panier':quantite_panier,
+        }
+        return render(request, 'base/meal_list_.html',context)
+    else:
+        context={
+            'categories':categories,
+            'meals':meals,
+            'cheapest_meal':cheapest_meal
+        }
+        return render(request, 'base/meal_list.html',context)
 
-
+@login_required
 def meals_by_category(request, category_id):
     # Récupérez la catégorie en fonction de l'ID
     category = Category.objects.get(id=category_id)
@@ -92,9 +120,24 @@ def meals_by_category(request, category_id):
     # Récupérez les repas appartenant à cette catégorie
     meals = Meal.objects.filter(category=category)
     cheapest_meal = Meal.objects.all().order_by('price').first()
-
-    context = {'category': category, 'meals': meals,'cheapest_meal':cheapest_meal}
-    return render(request, 'base/meals_by_category.html', context)
+    if CustomUser.objects.filter(username=request.user.username).exists() and CartItem.objects.filter(user__username=request.user.username,last=True).exists() :
+        customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
+        cart = CartItem.objects.get(user=customer,last=True)
+        quantite_panier = cart.quantity_sum
+        context={
+        'category':category,
+        'meals':meals,
+        'cheapest_meal':cheapest_meal,
+        'quantite_panier':quantite_panier,
+        }
+        return render(request, 'base/meals_by_category_.html', context)
+    else:
+        context = {
+            'category': category, 
+            'meals': meals,
+            'cheapest_meal':cheapest_meal,
+                }
+        return render(request, 'base/meals_by_category.html', context)
 
 
 def contact(request):
@@ -127,8 +170,23 @@ def meal_detail(request, meal_id):
 
     # Récupérez trois repas de la même catégorie, en excluant le repas actuel
     similar_meals = Meal.objects.filter(category=category).exclude(pk=meal_id)[:3]
-    
-    return render(request, 'base/meal_detail.html', {'meal': meal,'similar_meals':similar_meals})
+    if CustomUser.objects.filter(username=request.user.username).exists() and CartItem.objects.filter(user__username=request.user.username,last=True).exists() :
+        customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
+        cart = CartItem.objects.get(user=customer,last=True)
+        quantite_panier = cart.quantity_sum
+        context = {
+        'meal': meal,
+        'similar_meals':similar_meals,
+        'quantite_panier': quantite_panier,
+        }
+        return render(request, 'base/meal_detail_.html', context)
+    else :
+        context = {
+            'meal': meal,
+            'similar_meals':similar_meals
+            }
+        return render(request, 'base/meal_detail.html', context)
+
 
 @customer_required
 def add_to_cart(request, meal_id,quantity):
@@ -166,7 +224,7 @@ def cart(request):
     customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
     # Récupérez le panier de l'utilisateur connecté
     cart, created = CartItem.objects.get_or_create(user=customer,last=True)
-    send_cart_item_count_to_clients(cart.quantity_sum)
+    quantite_panier = cart.quantity_sum
     total = cart.calculate_total()
     code_promo= request.GET.get('code_promo')
     print(code_promo)
@@ -200,7 +258,7 @@ def cart(request):
     # Calculer le prix total du panier en parcourant les repas dans le panier
     
     
-    context = {'cart': cart, 'total': cart.total,'ancien_total':ancien_total}
+    context = {'cart': cart, 'total': cart.total,'ancien_total':ancien_total,'quantite_panier':quantite_panier}
     
     return render(request, 'base/cart.html', context)
 
@@ -250,7 +308,7 @@ def checkout(request):
     customer = CustomUser.objects.get(username=request.user.username,email=request.user.email)
     # Récupérez le panier de l'utilisateur connecté
     cart = CartItem.objects.get(user=customer,last=True)
-    send_cart_item_count_to_clients(cart.quantity_sum)
+    quantite_panier = cart.quantity_sum
     print(f"quantity : {cart.quantity_sum}")
     time_cook = max(item.meal.preparation_time for item in cart.cartitemmeal_set.all())
     # Vérifiez si le formulaire de livraison a été soumis
@@ -307,7 +365,7 @@ def checkout(request):
     else:
         form = DeliveryForm()
     
-    context = {'cart': cart, 'form': form,'order_total': cart.total}
+    context = {'cart': cart, 'form': form,'order_total': cart.total,'quantite_panier':quantite_panier}
     return render(request, 'base/checkout.html', context)
 
 
