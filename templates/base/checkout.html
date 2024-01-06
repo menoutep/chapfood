@@ -1,288 +1,540 @@
-{% extends 'index.html' %}
+<!DOCTYPE html>
 {% load static %}
-{% block extracss %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
-{% endblock %}
+<html lang="en">
+<head>
+{{ form.media }}
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="Responsive Bootstrap4 Shop Template, Created by Imran Hossain from https://imransdesign.com/">
 
-{% block content %}
+	<!-- title -->
+	<title>Chapfood</title>
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+	 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+	<!-- favicon -->
+	<link rel="shortcut icon" type="image/png" href="{% static 'assets/img/favicon.png' %}">
+	<!-- google font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap" rel="stylesheet">
+	<!-- fontawesome -->
+
+	<link rel="stylesheet" href="{% static 'assets/css/all.min.css' %}">
+	<!-- bootstrap -->
+	<link rel="stylesheet" href="{% static 'assets/bootstrap/css/bootstrap.min.css' %}">
+	<!-- owl carousel -->
+	<link rel="stylesheet" href="{% static 'assets/css/owl.carousel.css' %}">
+	<!-- magnific popup -->
+	<link rel="stylesheet" href="{% static 'assets/css/magnific-popup.css' %}">
+	<!-- animate css -->
+	<link rel="stylesheet" href="{% static 'assets/css/animate.css' %}">
+	<!-- mean menu css -->
+	<link rel="stylesheet" href="{% static 'assets/css/meanmenu.min.css' %}">
+	<!-- main style -->
+	<link rel="stylesheet" href="{% static 'assets/css/main.css' %}">
+	<!-- responsive -->
+	<link rel="stylesheet" href="{% static 'assets/css/responsive.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/forms.css' %}">
+	
+</head>
+<body>
+	
+	<!--PreLoader-->
+    <div class="loader">
+        <div class="loader-inner">
+            <div class="circle"></div>
+        </div>
+    </div>
+    <!--PreLoader Ends-->
+	
+	<!-- header -->
+	{% load static %}
 <style>
-.hidden-map {
-  display: none;
+#sticky-logo {
+    display: none;
 }
 
 </style>
-		<!-- features list section -->
-
-	<!-- end features list section -->
-
-	<!-- breadcrumb-section -->
-	<div class="breadcrumb-section breadcrumb-bg">
+	<div class="top-header-area" id="sticker">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-8 offset-lg-2 text-center">
-					<div class="breadcrumb-text">
-						<p>Commandez avez chapfood</p>
-						<h1>Commandez</h1>
+				<div class="col-lg-12 col-sm-12 text-center">
+					<div class="main-menu-wrap">
+						<!-- logo -->
+						<div class="site-logo">
+							<a href="{% url 'base:index' %}">
+								<img id="logo" src="{% static 'assets/img/chapfood.png'%}" alt="">
+								<img id="sticky-logo" src="{% static 'assets/img/logo2.png' %}" alt="Sticky Logo">
+							</a>
+						</div>
+						<!-- logo -->
+
+						<!-- menu start -->
+						<nav class="main-menu">
+							<ul>
+								<li class="current-list-item"><a href="{% url 'base:index' %}">Home</a>
+									<ul class="sub-menu">
+										<li><a href="{% url 'base:index' %}">Static Home</a></li>
+										<li><a href="{% url 'base:index' %}">Slider Home</a></li>
+									</ul>
+								</li>
+								<li><a href="{% url 'base:about' %}">About</a></li>
+								<li><a href="{% url 'base:meal_list' %}">shop</a>
+									<ul class="sub-menu">
+										<li><a href="{% url 'base:index' %}">Home</a></li>
+										
+										<li><a href="{% url 'base:cart' %}">Mon panier</a></li>
+										<li><a href="{% url 'base:checkout' %}">Ma commande</a></li>
+										
+										<li><a href="{% url 'base:meal_list' %}">Nos repas</a></li>
+									</ul>
+								</li>
+
+								<li><a href="{% url 'base:contact' %}">Contact</a></li>
+								<li><a href="#">Connexion</a>
+									<ul class="sub-menu">
+										<li><a href="{% url 'accounts:signup' %}">S'enregistrer</a></li>
+										<li><a href="{% url 'livreurs:depot-dossiers' %}">inscription livreur</a></li>
+										{% if user.is_authenticated %}
+											<li><a href="{% url 'accounts:logout' %}">Se déconnecter</a></li>
+											<li><a href="{% url 'accounts:password_reset' %}">Réinitialiser son mot de passe</a></li>
+										{% else %}
+											<li><a href="{% url 'accounts:login' %}">Se connecter</a></li>
+											<li><a href="{% url 'accounts:forget_password_reset' %}">Réinitialiser son mot de passe</a></li>
+										{% endif %}
+										
+									</ul>
+								</li>
+								<li>
+									<div class="header-icons">
+										<a class="shopping-cart position-relative d-inline-flex" href="{% url 'base:cart' %}">
+										<i class="fas fa fa-shopping-cart fa-lg"></i>
+										<span class="cart-basket d-flex align-items-center justify-content-center" id="totalPanier">
+                                            {{quantite_panier}}
+										</span>
+										</a>
+										<a class="mobile-hide search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+									</div>
+								</li>
+							</ul>
+						</nav>
+						<a class="mobile-show search-bar-icon" href="#"><i class="fas fa-search"></i></a>
+						<div class="mobile-menu"></div>
+						<!-- menu end -->
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<!-- end breadcrumb section -->
+	<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const originalLogo = document.getElementById("logo");
+        const stickyLogo = document.getElementById("sticky-logo");
 
-
-
-	<!-- check out section -->
-	<div class="checkout-section mt-50 mb-150">
-		<div class="container">
-            <form method="post" id="monFormulaire">
-                {% csrf_token %}
-			<div class="row">
-				<div class="col-lg-8">
-					<div class="checkout-accordion-wrap">
-						<div class="accordion" id="accordionExample">
-                            
-						  <div class="card single-accordion">
-						    <div class="card-header" id="headingOne">
-						      <h5 class="mb-0">
-						        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-						          Informations pour la livraison
-						        </button>
-						      </h5>
-						    </div>
-
-						    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
-						      <div class="card-body">
-						        <div class="billing-address-form">
-                                    <div class="form-group form-check">
-                                        {{ form.is_delivery }}
-                                        <label class="form-check-label" for="{{ form.is_delivery.id_for_label }}"><h5>Cliquez ici pour vous faire livrez à domicile</h5></label>
-                                    </div>
-                                    <div class="form-group rounded">
-                                        <label for="{{ form.delivery_address.id_for_label }}"><h5 id="livraison-label">Indiquez l'addresse de livraison</h5></label>
-										<div id="map" style="height: 400px;" class="hidden-map"></div>
-                                        {{ form.delivery_address }}
-                                    </div>
-                                    <div class="form-group rounded">
-                                        <label for="{{ form.pickup_time.id_for_label }}"><h5>Indiquer l'heure a laquelle vous voulez passez prendre le repas</h5></label>
-                                        {{ form.pickup_time }}
-                                    </div>
-						        </div>
-						      </div>
-						    </div>
-						  </div>
-						  <div class="card single-accordion">
-						    <div class="card-header" id="headingTwo">
-						      <h5 class="mb-0">
-						        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-						          Paiement
-						        </button>
-						      </h5>
-						    </div>
-						    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
-						      <div class="card-body">
-						        <div class="shipping-address-form">
-                                    <div class="form-group form-check">
-                                        {{ form.is_piece }}
-                                        <label class="form-check-label" for="{{ form.is_piece.id_for_label }}"><h5>Cliquez ici si vous avez la monnaie</h5></label>
-                                    </div>
-                                </div>
-                                <div class="shipping-address-form">
-                                    <div class="form-group rounded">
-                                        <label for="{{ form.monnaie.id_for_label }}"><h5>Indiquez la somme que vous avez : </h5></label>
-                                        {{ form.monnaie }}
-                                    </div>
-						        </div>
-						      </div>
-						    </div>
-						  </div>
-					
-						
-                        </div>
-
-					</div>
-				</div>
-
-				<div class="col-lg-4">
-					<div class="order-details-wrap">
-						<table class="order-details">
-							<thead>
-								<tr>
-									<th>Le détail de votre commande</th>
-									<th>Prix</th>
-								</tr>
-							</thead>
-							<tbody class="order-details-body">
-								<tr>
-									<td>Produits</td>
-									<td>Total</td>
-								</tr>
-                                {% for item in cart.cartitemmeal_set.all %}
-								<tr>
-									<td>{{ item.meal.name }}</td>
-									<td>{{item.calculate_item_total}}cfa</td>
-								</tr>
-                                {% endfor %}
+        window.addEventListener("scroll", function() {
+            if (window.scrollY > 0) { // Vous pouvez ajuster cette valeur en fonction de la position de défilement où vous voulez changer le logo.
+                originalLogo.style.display = "none";
+                stickyLogo.style.display = "block";
+            } else {
+                originalLogo.style.display = "block";
+                stickyLogo.style.display = "none";
+            }
+        });
+    });
 		
-							</tbody>
-							<tbody class="checkout-details">
-								<tr>
-									<td>Sous-Total</td>
-									<td>{{ order_total }}cfa</td>
-								</tr>
-								<tr>
-									<td>Livraison</td>
-									<td id="livraison">0cfa</td>
-								</tr>
-								<tr>
-									<td>Total</td>
-									<td id="total">{{order_total}}cfa</td>
-								</tr>
-							</tbody>
-						</table>
-						<a href="#" class="boxed-btn" type="submit" id="lienSoumettre">Valider la commande</a>
-					</div>
-				</div>
-			</div>
-            </form>
-		</div>
-	</div>
-	<!-- end check out section -->
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const isDeliveryCheckbox = document.querySelector('#id_is_delivery');
-        const deliveryAddressField = document.querySelector('#id_delivery_address');
-		deliveryAddressField.style.display = "none";
+	const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+	const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification_type4/`;
+	const socket = new WebSocket(wsEndpoint);
 	
-        const pickupTimeField = document.querySelector('#id_pickup_time');
-        const isPieceCheckbox = document.querySelector('#id_is_piece');
-        const monnaieField = document.querySelector('#id_monnaie');
-        const orderTotalInput = document.getElementById("order-total");
-        const total = document.getElementById("total");
-        const livraison = document.getElementById("livraison");
-        var totalActuelle = parseFloat(total.textContent.replace("cfa", ""));
-        const montantAjout = 500;
-        var nouveauTotal = 0;
-       
-
-        // Désactiver initialement le champ delivery_address
-        deliveryAddressField.disabled = true;
-
-        // Écouter les changements de la case à cocher
-        isDeliveryCheckbox.addEventListener('change', function () {
-            if (isDeliveryCheckbox.checked) {
-                // Si la case à cocher est cochée, désactiver le champ pickup_time et activer delivery_address
-                deliveryAddressField.disabled = false;
-                pickupTimeField.disabled = true;
-                nouveauTotal = totalActuelle + montantAjout;
-                livraison.textContent = montantAjout + "cfa"
-                total.textContent = nouveauTotal + "cfa";
-                
-
-				var map = L.map('map').setView([5.217667827913414,-3.7607097752205902], 13);
-				var deliveryMarker = L.marker([0, 0], { draggable: true }).addTo(map);
-					
-
-					// Obtenez la géolocalisation de l'utilisateur
-					navigator.geolocation.getCurrentPosition(function(position) {
-						var userLat = position.coords.latitude;
-						var userLng = position.coords.longitude;
-						document.getElementById('id_delivery_address').value = userLat + ',' + userLng;
-						// Placez un marqueur pour indiquer la position de l'utilisateur
-						var userMarker = L.marker([userLat, userLng]).addTo(map);
-						userMarker.bindPopup("Votre position").openPopup();
-
-						map.setView([userLat, userLng], 13);  // Centrez la carte sur la position de l'utilisateur
-						map.on('click', function(e) {
-									var latlng = e.latlng;
-									deliveryMarker.setLatLng(latlng);
-
-									// Mettez à jour le champ de formulaire avec les nouvelles coordonnées
-									document.getElementById('id_delivery_address').value = latlng.lat + ',' + latlng.lng;
-								});
-							});
-					L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-						maxZoom: 19,
-						attribution: 'OpenStreetMap'
-					}).addTo(map);
-
-            } else {
-                // Sinon, désactiver delivery_address et activer le champ pickup_time
-                deliveryAddressField.disabled = true;
-                pickupTimeField.disabled = false;
-                //orderTotalInput.value = {{ order_total }};
-                nouveauTotal = totalActuelle;
-                total.textContent = nouveauTotal + "cfa";
-                livraison.textContent = "0 cfa";
-				
-            }
-
-        });
-        isPieceCheckbox.addEventListener('change', function () {
-            if (isPieceCheckbox.checked) {
-                // Si la case à cocher est cochée, désactiver le champ pickup_time et activer delivery_address
-                monnaieField.disabled = true;
-                
-            } else {
-                // Sinon, désactiver delivery_address et activer le champ pickup_time
-            monnaieField.disabled = false;
-            }});
-    });
-    $(document).ready(function() {
-        $('#id_pickup_time').on('blur', function() {
-            var pickupTime = $(this).val();
-            var currentTime = new Date();
-            var hours = currentTime.getHours();
-            var minutes = currentTime.getMinutes();
-            var currentTimeString = hours + ':' + (minutes < 10 ? '0' : '') + minutes;
-
-            if (pickupTime < currentTimeString) {
-                alert("L'heure de prise de repas ne peut pas être antérieure à l'heure actuelle.");
-                $(this).val(''); // Effacez la valeur du champ
-            }
-        });
-    });
+	// Écoute des messages entrants
+document.addEventListener('DOMContentLoaded', (event) => {
+	socket.addEventListener("message", (event) => {
+		const data = JSON.parse(event.data);
+		if (data.type === "notification_type4") {
+			const itemCount = data.message;
+			// Utilise itemCount pour afficher la notification où tu le souhaites dans ta page web
+			// Par exemple :
 	
-  // Fonction pour gérer les modifications de la case à cocher
-  function toggleMapVisibility() {
-    var isDeliveryCheckbox = document.getElementById('id_is_delivery');
-    var mapContainer = document.getElementById('map');
-	var deliveryLabel = document.getElementById("livraison-label");
-
-    if (isDeliveryCheckbox.checked) {
-      // Case à cocher cochée : afficher la carte
-      mapContainer.classList.remove('hidden-map');
-	  deliveryLabel.classList.remove('hidden-map');
-    } else {
-      // Case à cocher décochée : masquer la carte
-      mapContainer.classList.add('hidden-map');
-	  deliveryLabel.classList.add('hidden-map');
-    }
-  }
-
-  // Attachez un gestionnaire d'événement à la case à cocher
-  var isDeliveryCheckbox = document.getElementById('id_is_delivery');
-  isDeliveryCheckbox.addEventListener('change', toggleMapVisibility);
-
-  // Appelez la fonction au chargement de la page pour configurer l'état initial
-  toggleMapVisibility();
-
-    // Sélectionnez l'élément du lien
-var lienSoumettre = document.getElementById("lienSoumettre");
-
-// Sélectionnez le formulaire
-var monFormulaire = document.getElementById("monFormulaire");
-
-// Ajoutez un gestionnaire d'événements pour le clic sur le lien
-lienSoumettre.addEventListener("click", function(event) {
-  event.preventDefault(); // Empêche le comportement par défaut (redirection)
-
-  // Soumettez le formulaire
-  monFormulaire.submit();
+			console.log("total article panier : "+itemCount)
+			document.getElementById('totalPanier').innerHTML=itemCount;  // Affichage de l'icone du nombre d'
+		}
+	});
 });
-
+	
 </script>
 
-{%endblock%}
+	<!-- end header -->
+	
+	<!-- search area -->
+	<div class="search-area">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<span class="close-btn"><i class="fas fa-window-close"></i></span>
+					<div class="search-bar">
+						<div class="search-bar-tablecell">
+							<h3>Search For:</h3>
+							<form method="GET" action="{% url 'base:index' %}">
+							<input type="text" name="q" placeholder="Keywords">
+							<button type="submit">Search <i class="fas fa-search"></i></button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end search area -->
+
+
+
+	<style>
+        .hidden-map {
+          display: none;
+        }
+        
+        </style>
+                <!-- features list section -->
+        
+            <!-- end features list section -->
+        
+            <!-- breadcrumb-section -->
+            <div class="breadcrumb-section breadcrumb-bg">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 offset-lg-2 text-center">
+                            <div class="breadcrumb-text">
+                                <p>Commandez avez chapfood</p>
+                                <h1>Commandez</h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- end breadcrumb section -->
+        
+        
+        
+            <!-- check out section -->
+            <div class="checkout-section mt-50 mb-150">
+                <div class="container">
+                    <form method="post" id="monFormulaire">
+                        {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="checkout-accordion-wrap">
+                                <div class="accordion" id="accordionExample">
+                                    
+                                  <div class="card single-accordion">
+                                    <div class="card-header" id="headingOne">
+                                      <h5 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                          Informations pour la livraison
+                                        </button>
+                                      </h5>
+                                    </div>
+        
+                                    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                      <div class="card-body">
+                                        <div class="billing-address-form">
+                                            <div class="form-group form-check">
+                                                {{ form.is_delivery }}
+                                                <label class="form-check-label" for="{{ form.is_delivery.id_for_label }}"><h5>Cliquez ici pour vous faire livrez à domicile</h5></label>
+                                            </div>
+                                            <div class="form-group rounded">
+                                                <label for="{{ form.delivery_address.id_for_label }}"><h5 id="livraison-label">Indiquez l'addresse de livraison</h5></label>
+                                                <div id="map" style="height: 400px;" class="hidden-map"></div>
+                                                {{ form.delivery_address }}
+                                            </div>
+                                            <div class="form-group rounded">
+                                                <label for="{{ form.pickup_time.id_for_label }}"><h5>Indiquer l'heure a laquelle vous voulez passez prendre le repas</h5></label>
+                                                {{ form.pickup_time }}
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="card single-accordion">
+                                    <div class="card-header" id="headingTwo">
+                                      <h5 class="mb-0">
+                                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                          Paiement
+                                        </button>
+                                      </h5>
+                                    </div>
+                                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                      <div class="card-body">
+                                        <div class="shipping-address-form">
+                                            <div class="form-group form-check">
+                                                {{ form.is_piece }}
+                                                <label class="form-check-label" for="{{ form.is_piece.id_for_label }}"><h5>Cliquez ici si vous avez la monnaie</h5></label>
+                                            </div>
+                                        </div>
+                                        <div class="shipping-address-form">
+                                            <div class="form-group rounded">
+                                                <label for="{{ form.monnaie.id_for_label }}"><h5>Indiquez la somme que vous avez : </h5></label>
+                                                {{ form.monnaie }}
+                                            </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                            
+                                
+                                </div>
+        
+                            </div>
+                        </div>
+        
+                        <div class="col-lg-4">
+                            <div class="order-details-wrap">
+                                <table class="order-details">
+                                    <thead>
+                                        <tr>
+                                            <th>Le détail de votre commande</th>
+                                            <th>Prix</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="order-details-body">
+                                        <tr>
+                                            <td>Produits</td>
+                                            <td>Total</td>
+                                        </tr>
+                                        {% for item in cart.cartitemmeal_set.all %}
+                                        <tr>
+                                            <td>{{ item.meal.name }}</td>
+                                            <td>{{item.calculate_item_total}}cfa</td>
+                                        </tr>
+                                        {% endfor %}
+                
+                                    </tbody>
+                                    <tbody class="checkout-details">
+                                        <tr>
+                                            <td>Sous-Total</td>
+                                            <td>{{ order_total }}cfa</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Livraison</td>
+                                            <td id="livraison">0cfa</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Total</td>
+                                            <td id="total">{{order_total}}cfa</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <a href="#" class="boxed-btn" type="submit" id="lienSoumettre">Valider la commande</a>
+                            </div>
+                        </div>
+                    </div>
+                    </form>
+                </div>
+            </div>
+            <!-- end check out section -->
+        
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const isDeliveryCheckbox = document.querySelector('#id_is_delivery');
+                const deliveryAddressField = document.querySelector('#id_delivery_address');
+                deliveryAddressField.style.display = "none";
+            
+                const pickupTimeField = document.querySelector('#id_pickup_time');
+                const isPieceCheckbox = document.querySelector('#id_is_piece');
+                const monnaieField = document.querySelector('#id_monnaie');
+                const orderTotalInput = document.getElementById("order-total");
+                const total = document.getElementById("total");
+                const livraison = document.getElementById("livraison");
+                var totalActuelle = parseFloat(total.textContent.replace("cfa", ""));
+                const montantAjout = 500;
+                var nouveauTotal = 0;
+               
+        
+                // Désactiver initialement le champ delivery_address
+                deliveryAddressField.disabled = true;
+        
+                // Écouter les changements de la case à cocher
+                isDeliveryCheckbox.addEventListener('change', function () {
+                    if (isDeliveryCheckbox.checked) {
+                        // Si la case à cocher est cochée, désactiver le champ pickup_time et activer delivery_address
+                        deliveryAddressField.disabled = false;
+                        pickupTimeField.disabled = true;
+                        nouveauTotal = totalActuelle + montantAjout;
+                        livraison.textContent = montantAjout + "cfa"
+                        total.textContent = nouveauTotal + "cfa";
+                        
+        
+                        var map = L.map('map').setView([5.217667827913414,-3.7607097752205902], 13);
+                        var deliveryMarker = L.marker([0, 0], { draggable: true }).addTo(map);
+                            
+        
+                            // Obtenez la géolocalisation de l'utilisateur
+                            navigator.geolocation.getCurrentPosition(function(position) {
+                                var userLat = position.coords.latitude;
+                                var userLng = position.coords.longitude;
+                                document.getElementById('id_delivery_address').value = userLat + ',' + userLng;
+                                // Placez un marqueur pour indiquer la position de l'utilisateur
+                                var userMarker = L.marker([userLat, userLng]).addTo(map);
+                                userMarker.bindPopup("Votre position").openPopup();
+        
+                                map.setView([userLat, userLng], 13);  // Centrez la carte sur la position de l'utilisateur
+                                map.on('click', function(e) {
+                                            var latlng = e.latlng;
+                                            deliveryMarker.setLatLng(latlng);
+        
+                                            // Mettez à jour le champ de formulaire avec les nouvelles coordonnées
+                                            document.getElementById('id_delivery_address').value = latlng.lat + ',' + latlng.lng;
+                                        });
+                                    });
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                maxZoom: 19,
+                                attribution: 'OpenStreetMap'
+                            }).addTo(map);
+        
+                    } else {
+                        // Sinon, désactiver delivery_address et activer le champ pickup_time
+                        deliveryAddressField.disabled = true;
+                        pickupTimeField.disabled = false;
+                        //orderTotalInput.value = {{ order_total }};
+                        nouveauTotal = totalActuelle;
+                        total.textContent = nouveauTotal + "cfa";
+                        livraison.textContent = "0 cfa";
+                        
+                    }
+        
+                });
+                isPieceCheckbox.addEventListener('change', function () {
+                    if (isPieceCheckbox.checked) {
+                        // Si la case à cocher est cochée, désactiver le champ pickup_time et activer delivery_address
+                        monnaieField.disabled = true;
+                        
+                    } else {
+                        // Sinon, désactiver delivery_address et activer le champ pickup_time
+                    monnaieField.disabled = false;
+                    }});
+            });
+            $(document).ready(function() {
+                $('#id_pickup_time').on('blur', function() {
+                    var pickupTime = $(this).val();
+                    var currentTime = new Date();
+                    var hours = currentTime.getHours();
+                    var minutes = currentTime.getMinutes();
+                    var currentTimeString = hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+        
+                    if (pickupTime < currentTimeString) {
+                        alert("L'heure de prise de repas ne peut pas être antérieure à l'heure actuelle.");
+                        $(this).val(''); // Effacez la valeur du champ
+                    }
+                });
+            });
+            
+          // Fonction pour gérer les modifications de la case à cocher
+          function toggleMapVisibility() {
+            var isDeliveryCheckbox = document.getElementById('id_is_delivery');
+            var mapContainer = document.getElementById('map');
+            var deliveryLabel = document.getElementById("livraison-label");
+        
+            if (isDeliveryCheckbox.checked) {
+              // Case à cocher cochée : afficher la carte
+              mapContainer.classList.remove('hidden-map');
+              deliveryLabel.classList.remove('hidden-map');
+            } else {
+              // Case à cocher décochée : masquer la carte
+              mapContainer.classList.add('hidden-map');
+              deliveryLabel.classList.add('hidden-map');
+            }
+          }
+        
+          // Attachez un gestionnaire d'événement à la case à cocher
+          var isDeliveryCheckbox = document.getElementById('id_is_delivery');
+          isDeliveryCheckbox.addEventListener('change', toggleMapVisibility);
+        
+          // Appelez la fonction au chargement de la page pour configurer l'état initial
+          toggleMapVisibility();
+        
+            // Sélectionnez l'élément du lien
+        var lienSoumettre = document.getElementById("lienSoumettre");
+        
+        // Sélectionnez le formulaire
+        var monFormulaire = document.getElementById("monFormulaire");
+        
+        // Ajoutez un gestionnaire d'événements pour le clic sur le lien
+        lienSoumettre.addEventListener("click", function(event) {
+          event.preventDefault(); // Empêche le comportement par défaut (redirection)
+        
+          // Soumettez le formulaire
+          monFormulaire.submit();
+        });
+        
+        </script>
+        
+        
+
+ 
+	<!-- end logo carousel -->
+{% include "footer.html" %}
+	<!-- footer -->
+	
+	<!-- end copyright -->
+	
+	<!-- jquery -->
+	
+	<script src="{% static 'assets/js/jquery-1.11.3.min.js' %}"></script>
+	<!-- bootstrap -->
+	<script src="{% static 'assets/bootstrap/js/bootstrap.min.js' %}"></script>
+	<!-- count down -->
+	<script src="{% static 'assets/js/jquery.countdown.js' %}"></script>
+	<!-- isotope -->
+	<script src="{% static 'assets/js/jquery.isotope-3.0.6.min.js' %}"></script>
+	<!-- waypoints -->
+	<script src="{% static 'assets/js/waypoints.js' %}"></script>
+	<!-- owl carousel -->
+	<script src="{% static 'assets/js/owl.carousel.min.js' %}"></script>
+	<!-- magnific popup -->
+	<script src="{% static 'assets/js/jquery.magnific-popup.min.js' %}"></script>
+	<!-- mean menu -->
+	<script src="{% static 'assets/js/jquery.meanmenu.min.js' %}"></script>
+	<!-- sticker js -->
+	<script src="{% static 'assets/js/sticker.js' %}"></script>
+	<!-- main js -->
+	<script src="{% static 'assets/js/main.js' %}"></script>
+
+</body>
+{% block js %}
+	<script type='text/javascript'>
+		console.log('juste pour tester');
+		if(localStorage.getItem('panier') == null){
+            var panier = {};
+        }else{
+            panier = JSON.parse(localStorage.getItem('panier'));
+        }
+		$(document).on('click', '.ted', function(){
+            console.log('ajouter');
+			var item_id = this.id.toString().substring(19);
+            
+			if(panier[item_id] != undefined){
+                quantite = panier[item_id][0] +1 ;
+                panier[item_id][0] = quantite;
+                panier[item_id][2] += parseFloat(document.getElementById("price"+item_id).innerHTML);
+            }else{
+                quantite = 1;
+                prix = parseFloat(document.getElementById("price"+item_id).innerHTML);
+                nom =  document.getElementById("name"+item_id).innerHTML;
+                panier[item_id] = [quantite, nom, prix ];
+                
+            }
+            console.log(panier);
+            localStorage.setItem('panier', JSON.stringify(panier));
+			
+			});
+			
+			
+		</script>
+{% endblock  %}
+</html>

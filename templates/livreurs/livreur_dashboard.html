@@ -688,6 +688,15 @@
                         .then(response => {
                           removeOrderLocally(order.id);
                             const row = this.closest('tr');
+                            var LivraisonPosition = order.delivery_address.split(",")
+                            var LivraisonLat = LivraisonPosition[0];
+                            var LivraisonLng = LivraisonPosition[1];
+                            // Placez un marqueur pour indiquer la position de l'utilisateur
+                            var livraisonMarker = L.marker([LivraisonLat, LivraisonLng]).addTo(map);
+                            livraisonMarker.bindPopup(order.user.username).openPopup();
+                            
+                            console.log(map)
+
                             row.remove();
                             //console.log(response.data["livraison"])
                             // Gérer la réponse du serveur (par exemple, mettre à jour l'affichage du panier)
