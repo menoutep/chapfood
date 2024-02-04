@@ -131,42 +131,7 @@
             </div>
         </div>
     </div>
-    <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const originalLogo = document.getElementById("logo");
-                const stickyLogo = document.getElementById("sticky-logo");
-        
-                window.addEventListener("scroll", function() {
-                    if (window.scrollY > 0) { // Vous pouvez ajuster cette valeur en fonction de la position de défilement où vous voulez changer le logo.
-                        originalLogo.style.display = "none";
-                        stickyLogo.style.display = "block";
-                    } else {
-                        originalLogo.style.display = "block";
-                        stickyLogo.style.display = "none";
-                    }
-                });
-            });
-                
-            const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-            const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification_type4/`;
-            const socket = new WebSocket(wsEndpoint);
-            
-            // Écoute des messages entrants
-        document.addEventListener('DOMContentLoaded', (event) => {
-            socket.addEventListener("message", (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === "notification_type4") {
-                    const itemCount = data.message;
-                    // Utilise itemCount pour afficher la notification où tu le souhaites dans ta page web
-                    // Par exemple :
-            
-                    console.log("total article panier : "+itemCount)
-                    document.getElementById('totalPanier').innerHTML=itemCount;  // Affichage de l'icone du nombre d'
-                }
-            });
-        });
-            
-    </script>
+
         
 	<!-- end header -->
 	
@@ -243,10 +208,13 @@
                                     //const cartUpdateForm = document.getElementById("cart-update-form-{{ item.meal.id }}");
                                     
                                     var newQuantity = 0;
+                                    
+                                      
                                     // Écoutez l'événement de modification de la quantité
                                     document.getElementById("quantity-input-{{ item.meal.id }}").addEventListener("change", function (event) {
                                         event.preventDefault();
                                         newQuantity = document.getElementById("quantity-input-{{ item.meal.id }}").value;
+                                        console.log('essai'+newQuantity)
                                         const updateURL = `{% url 'base:update_cart' item.meal.id 0 %}`.replace('0', newQuantity);
                                         // Soumettez le formulaire lorsque la quantité est modifiée
                                         fetch(updateURL)
@@ -365,7 +333,42 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const originalLogo = document.getElementById("logo");
+        const stickyLogo = document.getElementById("sticky-logo");
 
+        window.addEventListener("scroll", function() {
+            if (window.scrollY > 0) { // Vous pouvez ajuster cette valeur en fonction de la position de défilement où vous voulez changer le logo.
+                originalLogo.style.display = "none";
+                stickyLogo.style.display = "block";
+            } else {
+                originalLogo.style.display = "block";
+                stickyLogo.style.display = "none";
+            }
+        });
+    });
+        
+    const websocketProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsEndpoint = `${websocketProtocol}://${window.location.host}/ws/notification_type4/`;
+    const socket = new WebSocket(wsEndpoint);
+    
+    // Écoute des messages entrants
+document.addEventListener('DOMContentLoaded', (event) => {
+    socket.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "notification_type4") {
+            const itemCount = data.message;
+            // Utilise itemCount pour afficher la notification où tu le souhaites dans ta page web
+            // Par exemple :
+    
+            console.log("total article panier : "+itemCount)
+            document.getElementById('totalPanier').innerHTML=itemCount;  // Affichage de l'icone du nombre d'
+        }
+    });
+});
+    
+</script>
  
 	<!-- end logo carousel -->
 {% include "footer.html" %}
@@ -425,6 +428,7 @@
 			});
 			
 			
-		</script>
+	</script>
+
 {% endblock  %}
 </html>

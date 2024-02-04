@@ -106,6 +106,7 @@ STATUS_CHOICES = (
         ('en_cours', 'En cours de préparation'),
         ('en_livraison', 'En cours de livraison'),
         ('livree', 'Livrée'),
+        ('recuperer', 'Récupérée'),
         ('annulee', 'Annulée'),
     )   
 class Order(models.Model):
