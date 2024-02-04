@@ -13,7 +13,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.db.models import Q
 # Create your views here.
-
+from livreurs.models import Livreur
 import json
 
 # Fonction pour envoyer le nombre d'éléments du panier
@@ -355,7 +355,7 @@ def checkout(request):
                 }
             )
             
-            send_order_email(order)
+            send_order_email(order,subject=None)
             # Vider le panier
             #cart.cartitemmeal_set.all().delete()
             cart.last=False
@@ -379,13 +379,25 @@ def order_success(request):
 
 
 @customer_required
-def send_order_email(order):
+def send_order_email(order,subject):
     # Créez le contenu de l'e-mail
+    
     customer = CustomUser.objects.get(username=order.user.username,email=order.user.email)
     phone_number = customer.phone_number
-    subject = 'Confirmation de commande'
-    message = f"Bonjour ChapFood,\n\n"
+
+    if subject : 
+        message = f"Une nouvelle livraison est en attente\n"
+        subject = 'Nouvelle livraison\n'
+        livreurs_mails = [livreur.email for livreur in Livreur.objects.all()]
+        recipient_list = livreurs_mails   # Ajoutez les adress
+
+    else : 
+        subject = 'Confirmation de commande\n'
+        message = f"Bonjour ChapFood,\n"
+        recipient_list = ['josephzabre@gmail.com']
+
     message += f"Vous avez une commande de {order.user.username}.\nContact : {phone_number}.\n Voici un récapitulatif de sa commande :\n\n"
+
     for item in order.items.all():
         message += f"{item.meal.name} x{item.quantity}: {item.calculate_item_total()} cfa\n"
     
@@ -402,7 +414,9 @@ def send_order_email(order):
         message += f"Le client n'a pas la monnaie il a : {order.monnaie}. \n"
     # Envoyez l'e-mail
     from_email = 'jozacoder@gmail.com'  # Remplacez par votre adresse e-mail
-    recipient_list = ['josephzabre@gmail.com']  # Adresse e-mail du destinataire (utilisateur)
+    
+      # Adresse e-mail du destinataire (utilisateur)
+
     send_mail(subject, message, from_email, recipient_list)
 
 

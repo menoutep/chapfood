@@ -13,7 +13,7 @@ from asgiref.sync import async_to_sync
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.hashers import make_password
 # Create your views here.
-
+from base.views import send_order_email
 ####################################utils#######################
 def livreur_required(view_func):
     def _wrapped_view(request, *args, **kwargs):
@@ -246,11 +246,19 @@ def refuser_dossier(request, dossier_id):
 @user_passes_test(is_superuser)
 def admin_dashboard(request):
     dossiers = DossierLivreur.objects.filter(is_valid=False,refuser=False)
-    orders = Order.objects.filter(status='en_attente')
+    commandes_sur_place = Order.objects.filter(status='en_cours',is_delivery=False)
+    livraison_en_cours = Livraison.objects.filter(status="en_cours")
     print(dossiers)
+    commandes_termnines = Order.objects.filter(status='en_cours',is_delivery=False)
+    
     #print(orders)
     
-    context = {'dossiers':dossiers,'orders':orders}
+    context = {
+        'dossiers':dossiers,
+        'commandes_sur_places':commandes_sur_place,
+        'livraisons_en_cours':livraison_en_cours,
+        
+        }
     return render(request, 'livreurs/admin_dashboard.html',context)
 
 @user_passes_test(is_superuser)
@@ -263,6 +271,7 @@ def accepter_commande(request,order_id):
         order.save()
         
         if order.is_delivery:
+            send_order_email(order,subject='nouvelle livraison en attente')
             serializer = OrderSerializer(order)
             serialized_data = serializer.data
             print(serialized_data)

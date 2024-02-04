@@ -1,0 +1,77 @@
+    
+        document.addEventListener('DOMContentLoaded', () => {
+            // Vérifier si le navigateur prend en charge les notifications
+            if (!('Notification' in window)) {
+                console.error('Ce navigateur ne prend pas en charge les notifications.');
+                return;
+            }
+    
+            // Demander la permission pour afficher des notifications
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    console.log('Autorisations de notification accordées.');
+    
+                    // Fonction pour jouer le son
+                    function jouerSon() {
+                        // Créer un nouvel élément audio
+                        const audio = new Audio("{% static 'notifications/notif.awav' %}");
+                        audio.play();
+                    }
+    
+                    socket.addEventListener("message", (event) => {
+                        jouerSon();
+                        const orderData = JSON.parse(event.data);
+                        const order = orderData.message;
+                         console.log("Received notification:", order); // Log the received message to the console
+                        console.log('Message received:', order.order_total);
+                        if (audio) {
+                        audio.play();
+                        }
+                        storeOrderLocally(order);
+                        addOrderToTable(order);
+                      });
+                    document.addEventListener("DOMContentLoaded", function () {
+                      var storedOrders = localStorage.getItem("orders");
+                      if (storedOrders) {
+                          var ordersArray = JSON.parse(storedOrders);
+            
+                          // Ajoutez chaque commande au tableau
+                          ordersArray.forEach(function (order) {
+                              addOrderToTable(order);
+                          });
+                      }
+                    });               
+    
+    
+    
+                    // Simuler la réception d'un email
+                // Simuler un email après 5 secondes
+                } else {
+                    console.warn('Autorisations de notification refusées.');
+                }
+            });
+        });
+
+        socket.addEventListener("message", (event) => {
+            jouerSon();
+            const orderData = JSON.parse(event.data);
+            const order = orderData.message;
+             console.log("Received notification:", order); // Log the received message to the console
+            console.log('Message received:', order.order_total);
+            if (audio) {
+            audio.play();
+            }
+            storeOrderLocally(order);
+            addOrderToTable(order);
+          });
+        document.addEventListener("DOMContentLoaded", function () {
+          var storedOrders = localStorage.getItem("orders");
+          if (storedOrders) {
+              var ordersArray = JSON.parse(storedOrders);
+
+              // Ajoutez chaque commande au tableau
+              ordersArray.forEach(function (order) {
+                  addOrderToTable(order);
+              });
+          }
+        });
