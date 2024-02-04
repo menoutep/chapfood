@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+from sshtunnel import SSHTunnelForwarder
 from pathlib import Path
-
+from .password import DATABASE_HOST_ADRESS,DB_PASSWORD,USERNAME,SSH_PRIVATE_KEY_PASSWORD,SSH_USERNAME,PATH_TO_SSH_PRIVATE_KEY,LOCAL_DB_PORT_ON_THE_SERVER,REMOTE_DB_DB_NAME,REMOTE_DB_PASSWORD,REMOTE_DB_USERNAME,SERVER_IP
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,6 +21,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+ssh_tunnel = SSHTunnelForwarder(
+    SERVER_IP,
+    ssh_private_key_password='@ChapFood2024',
+    ssh_username=SSH_USERNAME,
+    remote_bind_address=(DATABASE_HOST_ADRESS, LOCAL_DB_PORT_ON_THE_SERVER),
+)
+ssh_tunnel.start()
 SECRET_KEY = 'django-insecure-#@%1v=xt--4$-+$6dt9qtv(xm23jlm$yiw+6uih5s8^0-g3zi_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -91,9 +99,21 @@ WSGI_APPLICATION = 'chapfood.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME':'chapfood',
+        'USER':'root',
+        'PASSWORD':'Leocadie0',
+        'HOST':'',
+        'PORT':'3306',},
+    'shhtunnel_db': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'NAME': REMOTE_DB_DB_NAME,
+        'USER': REMOTE_DB_USERNAME,
+        'PASSWORD': "Ry#u_@M_9_iU0023%~Ch°)fd'=0",
     }
+    
 }
 
 
