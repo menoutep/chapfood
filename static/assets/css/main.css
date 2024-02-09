@@ -444,8 +444,19 @@ a.read-more-btn:hover {
 ul li a.shopping-cart .cart-basket {
   font-size: .6rem;
   position: absolute;
-  top: -1px;
-  right: 3px;
+  bottom: 1.7rem;
+  left: 2.1rem;
+  width: 15px;
+  height: 15px;
+  color: #fff;
+  background-color: #efd73a;
+  border-radius: 50%;
+}
+ul li.mean-last a.shopping-cart .cart-basket {
+  font-size: .6rem;
+  position: absolute;
+    bottom: 1rem;
+    left: 3.5rem;
   width: 15px;
   height: 15px;
   color: #fff;

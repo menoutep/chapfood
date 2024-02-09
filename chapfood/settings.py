@@ -21,13 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-ssh_tunnel = SSHTunnelForwarder(
-    SERVER_IP,
-    ssh_private_key_password='@ChapFood2024',
-    ssh_username=SSH_USERNAME,
-    remote_bind_address=(DATABASE_HOST_ADRESS, LOCAL_DB_PORT_ON_THE_SERVER),
-)
-ssh_tunnel.start()
+
 SECRET_KEY = 'django-insecure-#@%1v=xt--4$-+$6dt9qtv(xm23jlm$yiw+6uih5s8^0-g3zi_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
