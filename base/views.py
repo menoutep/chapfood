@@ -54,7 +54,11 @@ def index(request):
                               Q(category__name__icontains=q) |          
                               Q(description__icontains=q),category__active=True)
     
-    
+
+    if meals.count() == 0:
+        meals = meals=Meal.objects.filter(Q(name__icontains=q) |
+                              Q(category__name__icontains=q) |          
+                              Q(description__icontains=q)) 
     
     cheapest_meal = meals.order_by('price').first()
     

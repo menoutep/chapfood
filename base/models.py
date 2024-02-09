@@ -11,7 +11,8 @@ class Category(models.Model):
     start_time = models.TimeField(help_text="Date de début de validité du code promotionnel",null=True,blank=True)
     end_time = models.TimeField(help_text="Date de fin de validité du code promotionnel",null=True,blank=True)
     active = models.BooleanField(default=False, help_text="Code promotionnel actif ou inactif")
-
+    
+    
     def is_active(self):
         """
         Vérifie si la categorie est active en fonction de l'heure actuelle.
